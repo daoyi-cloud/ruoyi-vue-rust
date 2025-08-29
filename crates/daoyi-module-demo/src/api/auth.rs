@@ -6,7 +6,7 @@ use daoyi_common::app::{
     utils::{RANDOM_PASSWORD, verify_password},
     valid::ValidJson,
 };
-use daoyi_common::entity::{prelude::*, sys_user};
+use crate::entity::{prelude::*, sys_user};
 use axum::{Extension, Router, debug_handler, extract::State, routing};
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};

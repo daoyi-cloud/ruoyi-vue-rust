@@ -14,7 +14,7 @@ use daoyi_common::app::{
     valid::{ValidJson, ValidQuery},
     validation::is_mobile_phone,
 };
-use daoyi_common::entity::{prelude::*, sys_user, sys_user::ActiveModel};
+use crate::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use sea_orm::{ActiveValue, Condition, IntoActiveModel, QueryOrder, QueryTrait, prelude::*};
 use serde::Deserialize;
 use validator::Validate;
