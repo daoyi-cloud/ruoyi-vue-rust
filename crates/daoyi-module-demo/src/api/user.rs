@@ -1,19 +1,20 @@
-use daoyi_common::app::middleware::get_auth_layer;
-use daoyi_common::app::utils::encode_password;
-use daoyi_common::app::{
-    AppState,
-    common::{Page, PaginationParams},
-    enumeration::Gender,
-    error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
-    path::Path,
-    valid::{ValidJson, ValidQuery},
-};
-use daoyi_common::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use anyhow::Context;
 use axum::{
     extract::State,
     {Router, debug_handler, routing},
 };
+use daoyi_common::app::{
+    AppState,
+    common::{Page, PaginationParams},
+    enumeration::Gender,
+    error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
+    middleware::get_auth_layer,
+    path::Path,
+    utils::encode_password,
+    valid::{ValidJson, ValidQuery},
+    validation::is_mobile_phone,
+};
+use daoyi_common::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use sea_orm::{ActiveValue, Condition, IntoActiveModel, QueryOrder, QueryTrait, prelude::*};
 use serde::Deserialize;
 use validator::Validate;
@@ -46,7 +47,7 @@ pub struct UserParams {
     pub account: String,
     #[validate(length(min = 6, max = 16, message = "密码长度6-16"))]
     pub password: String,
-    #[validate(custom(function = "crate::app::validation::is_mobile_phone"))]
+    #[validate(custom(function = "is_mobile_phone"))]
     pub mobile_phone: String,
     pub birthday: Date,
     #[serde(default)]
