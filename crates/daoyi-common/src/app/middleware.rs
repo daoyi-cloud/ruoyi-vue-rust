@@ -1,4 +1,4 @@
-use crate::app::auth::{JWT, get_jwt};
+use crate::app::auth::{JWT, get_default_jwt};
 use crate::app::error::ApiError;
 use axum::body::Body;
 use axum::http::{Request, Response, header};
@@ -7,7 +7,7 @@ use std::sync::LazyLock;
 use tower_http::auth::{AsyncAuthorizeRequest, AsyncRequireAuthorizationLayer};
 
 static AUTH_LAYER: LazyLock<AsyncRequireAuthorizationLayer<JWTAuth>> =
-    LazyLock::new(|| AsyncRequireAuthorizationLayer::<JWTAuth>::new(JWTAuth::new(get_jwt())));
+    LazyLock::new(|| AsyncRequireAuthorizationLayer::<JWTAuth>::new(JWTAuth::new(get_default_jwt())));
 
 #[derive(Clone)]
 pub struct JWTAuth {

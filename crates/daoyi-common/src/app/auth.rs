@@ -110,6 +110,6 @@ impl Default for JWT {
     }
 }
 
-pub fn get_jwt() -> &'static JWT {
+pub fn get_default_jwt() -> &'static JWT {
     &DEFAULT_JWT
 }

@@ -1,6 +1,6 @@
 use daoyi_common::app::{
     AppState,
-    auth::{Principal, get_jwt},
+    auth::{Principal, get_default_jwt},
     error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
     middleware::get_auth_layer,
     utils::{RANDOM_PASSWORD, verify_password},
@@ -58,7 +58,7 @@ async fn login(
         id: user.id,
         name: user.name,
     };
-    let access_token = get_jwt().encode(&principal)?;
+    let access_token = get_default_jwt().encode(&principal)?;
     tracing::info!("登录成功...JWT token: {access_token}");
     api_json_msg_ok("登录成功", LoginResult { access_token })
 }
