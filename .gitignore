@@ -1,6 +1,10 @@
-/target
-/migration/target
-/Cargo.lock
 .idea
-/config-local.toml
-/logs
+*.iml
+*.exe
+*.pdb
+**/target/
+**/Cargo.lock
+**/app.log.*
+*-local.yaml
+.vscode
+.env
