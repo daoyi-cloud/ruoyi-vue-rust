@@ -16,6 +16,9 @@ pub fn init() {
         .merge(Toml::file(
             Env::var("APP_CONFIG").as_deref().unwrap_or("config.toml"),
         ))
+        .merge(Toml::file(
+            Env::var("APP_CONFIG").as_deref().unwrap_or("config-local.toml"),
+        ))
         .merge(Env::prefixed("APP_").global());
 
     let mut config = match raw_config.extract::<ServerConfig>() {

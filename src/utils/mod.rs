@@ -1,12 +1,14 @@
-use argon2::{password_hash::SaltString, Argon2, PasswordHash};
+use argon2::password_hash::rand_core::OsRng;
+use argon2::{Argon2, PasswordHash, password_hash::SaltString};
 use rand::Rng;
+use rand::distr::Alphanumeric;
 use std::iter;
 
 #[allow(dead_code)]
 #[inline]
 pub fn random_string(limit: usize) -> String {
     iter::repeat(())
-        .map(|_| rand::thread_rng().sample(rand::distributions::Alphanumeric))
+        .map(|_| rand::rng().sample(Alphanumeric))
         .map(char::from)
         .take(limit)
         .collect()
@@ -23,7 +25,7 @@ pub fn verify_password(password: &str, password_hash: &str) -> anyhow::Result<()
 }
 
 pub fn hash_password(password: &str) -> anyhow::Result<String> {
-    let salt = SaltString::generate(rand::thread_rng());
+    let salt = SaltString::generate(&mut OsRng);
     Ok(PasswordHash::generate(Argon2::default(), password, &salt)
         .map_err(|e| anyhow::anyhow!("failed to generate password hash: {}", e))?
         .to_string())

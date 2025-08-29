@@ -1,2 +1,6 @@
 /target
 /migration/target
+/Cargo.lock
+.idea
+/config-local.toml
+/logs

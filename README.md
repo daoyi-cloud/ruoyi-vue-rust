@@ -1,3 +1,12 @@
+# Update Cargo.toml
+```toml
+edition = "2024"
+rust-version = "1.89"
+```
+- Upgrade all incompatible dependencies
+    ```sh
+    cargo upgrade --incompatible
+    ```
 # Running Migrator CLI
 
 - Generate a new migration file

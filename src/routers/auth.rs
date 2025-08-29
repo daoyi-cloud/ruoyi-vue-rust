@@ -1,5 +1,5 @@
 use cookie::Cookie;
-use rinja::Template;
+use askama::Template;
 use salvo::oapi::extract::*;
 use salvo::prelude::*;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
