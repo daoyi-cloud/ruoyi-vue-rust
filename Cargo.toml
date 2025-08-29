@@ -1,9 +1,21 @@
+[workspace]
+members = ["crates/*"]
 [package]
 name = "ruoyi-vue-rust"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+daoyi-common.workspace = true
+tokio.workspace = true
+anyhow.workspace = true
+axum.workspace = true
+tracing.workspace = true
+sea-orm.workspace = true
+serde.workspace = true
+validator.workspace = true
+
+[workspace.dependencies]
 axum = { version = "0.8.4", features = ["macros"] }
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = { version = "0.1.41", features = ["async-await"] }
@@ -23,3 +35,4 @@ regex = "1.11.2"
 idgenerator = "2.0.0"
 bcrypt = "0.17.1"
 jsonwebtoken = "9.3.1"
+daoyi-common = { version = "0.1.0", path = "crates/daoyi-common" }

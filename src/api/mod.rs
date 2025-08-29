@@ -1,4 +1,4 @@
-use crate::app::{
+use daoyi_common::app::{
     AppState,
     error::{ApiError, ApiResult},
 };

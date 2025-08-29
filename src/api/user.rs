@@ -1,6 +1,6 @@
-use crate::app::middleware::get_auth_layer;
-use crate::app::utils::encode_password;
-use crate::app::{
+use daoyi_common::app::middleware::get_auth_layer;
+use daoyi_common::app::utils::encode_password;
+use daoyi_common::app::{
     AppState,
     common::{Page, PaginationParams},
     enumeration::Gender,
@@ -8,7 +8,7 @@ use crate::app::{
     path::Path,
     valid::{ValidJson, ValidQuery},
 };
-use crate::entity::{prelude::*, sys_user, sys_user::ActiveModel};
+use daoyi_common::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use anyhow::Context;
 use axum::{
     extract::State,

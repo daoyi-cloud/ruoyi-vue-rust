@@ -1,4 +1,4 @@
-use crate::app::{
+use daoyi_common::app::{
     AppState,
     auth::{Principal, get_jwt},
     error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
@@ -6,7 +6,7 @@ use crate::app::{
     utils::{RANDOM_PASSWORD, verify_password},
     valid::ValidJson,
 };
-use crate::entity::{prelude::*, sys_user};
+use daoyi_common::entity::{prelude::*, sys_user};
 use axum::{Extension, Router, debug_handler, extract::State, routing};
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};

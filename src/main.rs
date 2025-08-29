@@ -1,7 +1,5 @@
 mod api;
-mod app;
-mod config;
-mod entity;
+use daoyi_common::app;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
