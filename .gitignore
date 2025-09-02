@@ -8,3 +8,5 @@
 *-local.yaml
 .vscode
 .env
+*-demo.yaml
+.env.demo

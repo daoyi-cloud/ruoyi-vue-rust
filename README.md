@@ -21,7 +21,7 @@
     ```shell
     cargo install sea-orm-cli
     ```
-- 生成 entity
+- 生成 demo entity
     ```shell
     sea-orm-cli generate entity -s demo --with-serde both --model-extra-attributes 'serde(rename_all="camelCase")' --date-time-crate chrono -o ./src/entity
     ```
@@ -30,4 +30,9 @@
 
     ```text
     RUST_LOG=DEBUG
+    ```
+  
+  - 生成 dev entity
+    ```shell
+      sea-orm-cli generate entity -s dev --with-serde both --model-extra-attributes 'serde(rename_all="camelCase")' --date-time-crate chrono -o ./crates/daoyi-module-demo/src/entity
     ```

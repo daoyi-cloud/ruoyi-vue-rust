@@ -12,6 +12,8 @@ anyhow.workspace = true
 axum.workspace = true
 tracing.workspace = true
 daoyi-module-demo.workspace = true
+daoyi-module-system.workspace = true
+daoyi-module-infra.workspace = true
 
 [workspace.dependencies]
 axum = { version = "0.8.4", features = ["macros"] }
@@ -35,3 +37,5 @@ bcrypt = "0.17.1"
 jsonwebtoken = "9.3.1"
 daoyi-common = { version = "0.1.0", path = "crates/daoyi-common" }
 daoyi-module-demo = { version = "0.1.0", path = "crates/daoyi-module-demo" }
+daoyi-module-infra = { version = "0.1.0", path = "crates/daoyi-module-infra" }
+daoyi-module-system = { version = "0.1.0", path = "crates/daoyi-module-system" }
