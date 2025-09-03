@@ -7,3 +7,6 @@ database:
   password: postgres
   database: postgres
   schema: public
+auth:
+  ignore_urls:
+    - /demo/api/auth/login
