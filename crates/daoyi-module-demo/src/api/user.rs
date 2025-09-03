@@ -1,3 +1,4 @@
+use crate::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use anyhow::Context;
 use axum::{
     extract::State,
@@ -8,13 +9,11 @@ use daoyi_common::app::{
     common::{Page, PaginationParams},
     enumeration::Gender,
     error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
-    middleware::get_auth_layer,
     path::Path,
     utils::encode_password,
     valid::{ValidJson, ValidQuery},
     validation::is_mobile_phone,
 };
-use crate::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use sea_orm::{ActiveValue, Condition, IntoActiveModel, QueryOrder, QueryTrait, prelude::*};
 use serde::Deserialize;
 use validator::Validate;
@@ -26,7 +25,6 @@ pub fn create_router() -> Router<AppState> {
         .route("/{id}", routing::put(update))
         .route("/{id}", routing::delete(delete))
         .route("/all", routing::get(query_users))
-        .route_layer(get_auth_layer())
 }
 
 #[derive(Debug, Deserialize, Validate)]

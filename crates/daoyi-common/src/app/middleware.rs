@@ -1,13 +1,18 @@
-use crate::app::auth::{JWT, get_default_jwt};
-use crate::app::error::ApiError;
+use crate::app::utils::path_any_matches;
+use crate::app::{
+    auth::{JWT, get_default_jwt},
+    error::ApiError,
+};
+use crate::config;
 use axum::body::Body;
 use axum::http::{Request, Response, header};
 use std::pin::Pin;
 use std::sync::LazyLock;
 use tower_http::auth::{AsyncAuthorizeRequest, AsyncRequireAuthorizationLayer};
 
-static AUTH_LAYER: LazyLock<AsyncRequireAuthorizationLayer<JWTAuth>> =
-    LazyLock::new(|| AsyncRequireAuthorizationLayer::<JWTAuth>::new(JWTAuth::new(get_default_jwt())));
+static AUTH_LAYER: LazyLock<AsyncRequireAuthorizationLayer<JWTAuth>> = LazyLock::new(|| {
+    AsyncRequireAuthorizationLayer::<JWTAuth>::new(JWTAuth::new(get_default_jwt()))
+});
 
 #[derive(Clone)]
 pub struct JWTAuth {
@@ -32,6 +37,7 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
 
     fn authorize(&mut self, mut request: Request<Body>) -> Self::Future {
         Box::pin(async {
+            let ignore_urls = config::get().auth().ignore_urls();
             let token = request
                 .headers()
                 .get(header::AUTHORIZATION)
@@ -51,10 +57,13 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
                         })?;
                     Ok(token)
                 })
-                .transpose()?
-                .ok_or_else(|| {
-                    ApiError::Unauthenticated(String::from("Authorization请求头必须存在"))
-                })?;
+                .transpose()?;
+            if token.is_none() && path_any_matches(&ignore_urls, &request.uri().path())? {
+                return Ok(request);
+            }
+            let token = token.ok_or_else(|| {
+                ApiError::Unauthenticated(String::from("Authorization请求头必须存在"))
+            })?;
             let principal = self
                 .jwt
                 .decode(&token)

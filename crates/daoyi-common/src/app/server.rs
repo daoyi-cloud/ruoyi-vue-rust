@@ -1,17 +1,21 @@
-use crate::app::auth::Principal;
-use crate::app::{AppState, latency::LatencyOnResponse};
+use crate::app::{
+    AppState, auth::Principal, latency::LatencyOnResponse, middleware::get_auth_layer,
+};
 use crate::config::ServerConfig;
-use axum::extract::{ConnectInfo, DefaultBodyLimit};
-use axum::{Router, extract::Request};
+use axum::{
+    Router,
+    extract::Request,
+    extract::{ConnectInfo, DefaultBodyLimit},
+};
 use bytesize::ByteSize;
-use std::net::SocketAddr;
-use std::time::Duration;
+use std::{net::SocketAddr, time::Duration};
 use tokio::net::TcpListener;
-use tower_http::cors;
-use tower_http::cors::CorsLayer;
-use tower_http::normalize_path::NormalizePathLayer;
-use tower_http::timeout::TimeoutLayer;
-use tower_http::trace::TraceLayer;
+use tower_http::{
+    cors::{self, CorsLayer},
+    normalize_path::NormalizePathLayer,
+    timeout::TimeoutLayer,
+    trace::TraceLayer,
+};
 
 pub struct Server {
     config: &'static ServerConfig,
@@ -81,6 +85,7 @@ impl Server {
             .layer(timeout)
             .layer(body_limit)
             .layer(trace)
+            .route_layer(get_auth_layer())
             .layer(cors)
             .layer(normalize_path)
             .with_state(state)

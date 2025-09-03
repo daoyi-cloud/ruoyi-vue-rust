@@ -1,7 +1,9 @@
+mod auth;
 mod database;
 mod server;
 
 use anyhow::{Context, anyhow};
+pub use auth::AuthConfig;
 use config::{Config, FileFormat};
 pub use database::DatabaseConfig;
 use serde::Deserialize;
@@ -15,6 +17,8 @@ static CONFIG: LazyLock<AppConfig> =
 pub struct AppConfig {
     server: ServerConfig,
     database: DatabaseConfig,
+    #[serde(default = "AuthConfig::default")]
+    auth: AuthConfig,
 }
 
 impl AppConfig {
@@ -47,6 +51,9 @@ impl AppConfig {
     }
     pub fn database(&self) -> &DatabaseConfig {
         &self.database
+    }
+    pub fn auth(&self) -> &AuthConfig {
+        &self.auth
     }
 }
 

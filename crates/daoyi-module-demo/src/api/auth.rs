@@ -2,7 +2,6 @@ use daoyi_common::app::{
     AppState,
     auth::{Principal, get_default_jwt},
     error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
-    middleware::get_auth_layer,
     utils::{RANDOM_PASSWORD, verify_password},
     valid::ValidJson,
 };
@@ -15,7 +14,6 @@ use validator::Validate;
 pub fn create_router() -> Router<AppState> {
     Router::new()
         .route("/user-info", routing::get(get_user_info))
-        .route_layer(get_auth_layer())
         .route("/login", routing::post(login))
 }
 
