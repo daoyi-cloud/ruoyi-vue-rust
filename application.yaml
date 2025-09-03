@@ -7,6 +7,11 @@ database:
   password: postgres
   database: postgres
   schema: public
+redis:
+  host: localhost
+  port: 6379
+  password: 123456789
+  database: 0
 auth:
   ignore_urls:
     - /demo/api/auth/login

@@ -10,6 +10,7 @@ pub mod logger;
 pub mod middleware;
 pub mod path;
 pub mod query;
+mod redis;
 pub mod response;
 pub mod serde;
 pub mod server;
@@ -36,7 +37,7 @@ pub async fn run(router: Router<AppState>) -> anyhow::Result<()> {
     logger::init();
     id::init()?;
     tracing::info!("Starting app server...");
-
+    redis::test_redis()?;
     let db = database::init().await?;
     let state = AppState::new(db);
     let server = server::Server::new(config::get().server());

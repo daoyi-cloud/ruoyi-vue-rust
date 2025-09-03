@@ -24,3 +24,5 @@ idgenerator.workspace = true
 bcrypt.workspace = true
 jsonwebtoken.workspace = true
 wax.workspace = true
+redis.workspace = true
+r2d2.workspace = true

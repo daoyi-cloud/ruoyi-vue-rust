@@ -1,11 +1,13 @@
 mod auth;
 mod database;
+mod redis;
 mod server;
 
 use anyhow::{Context, anyhow};
 pub use auth::AuthConfig;
 use config::{Config, FileFormat};
 pub use database::DatabaseConfig;
+pub use redis::RedisConfig;
 use serde::Deserialize;
 pub use server::ServerConfig;
 use std::sync::LazyLock;
@@ -19,6 +21,7 @@ pub struct AppConfig {
     database: DatabaseConfig,
     #[serde(default = "AuthConfig::default")]
     auth: AuthConfig,
+    redis: RedisConfig,
 }
 
 impl AppConfig {
@@ -54,6 +57,9 @@ impl AppConfig {
     }
     pub fn auth(&self) -> &AuthConfig {
         &self.auth
+    }
+    pub fn redis(&self) -> &RedisConfig {
+        &self.redis
     }
 }
 
