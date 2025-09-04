@@ -1,12 +1,13 @@
 use crate::config;
 use r2d2::Pool;
-use redis::{Client, Commands, FromRedisValue, RedisResult, ToRedisArgs};
+use redis::{Client, Commands, FromRedisValue, ToRedisArgs};
 use std::sync::LazyLock;
-use std::time::Duration;
 
 type RedisClient = Pool<Client>;
 
 static REDIS: LazyLock<RedisClient> = LazyLock::new(|| init().expect("Failed to initialize Redis pool"));
+
+const CONNECTION_TEST_KEY: &str = "connection_test_key";
 
 fn init() -> anyhow::Result<Pool<Client>> {
     let redis_config = config::get().redis();
@@ -21,16 +22,16 @@ fn init() -> anyhow::Result<Pool<Client>> {
     };
     let pool = Pool::builder().build(client)?;
     let mut conn = pool.get()?;
-    let _: () = conn.set("CONNECTION_TEST_KEY", xid::new().to_string())?;
-    let val: String = conn.get("CONNECTION_TEST_KEY")?;
-    tracing::info!("Redis connected successfully, CONNECTION_TEST_KEY = {val}");
+    let _: () = conn.set(CONNECTION_TEST_KEY, xid::new().to_string())?;
+    let val: String = conn.get(CONNECTION_TEST_KEY)?;
+    tracing::info!("Redis connected successfully, {CONNECTION_TEST_KEY} = {val}");
     Ok(pool)
 }
 
 /// 测试Redis连接
 pub fn test_redis() -> anyhow::Result<String> {
-    let v: String = get("CONNECTION_TEST_KEY")?;
-    tracing::info!("Redis test success...CONNECTION_TEST_KEY={v}");
+    let v: String = get(CONNECTION_TEST_KEY)?;
+    tracing::info!("Redis test success...{CONNECTION_TEST_KEY}={v}");
     Ok(v)
 }
 
@@ -97,9 +98,10 @@ pub fn del<K: ToRedisArgs>(key: K) -> anyhow::Result<()> {
 /// 
 /// # 参数
 /// * `key` - 要检查的键
-pub fn exists<K: ToRedisArgs>(key: K) -> RedisResult<bool> {
-    let mut conn = get_client().get().expect("Failed to get Redis connection");
-    conn.exists(key)
+pub fn exists<K: ToRedisArgs>(key: K) -> anyhow::Result<bool> {
+    let mut conn = get_client().get().map_err(|e| anyhow::anyhow!(e))?;
+    let result = conn.exists(key)?;
+    Ok(result)
 }
 
 /// 设置带TTL的键值对
@@ -107,14 +109,15 @@ pub fn exists<K: ToRedisArgs>(key: K) -> RedisResult<bool> {
 /// # 参数
 /// * `key` - 键
 /// * `value` - 值
-/// * `expire` - 过期时间
+/// * `seconds` - 过期时间（秒）
 pub fn set_with_expire<K: ToRedisArgs, V: ToRedisArgs>(
     key: K,
     value: V,
-    expire: Duration,
-) -> RedisResult<()> {
-    let mut conn = get_client().get().expect("Failed to get Redis connection");
-    conn.set_ex(key, value, expire.as_secs())
+    seconds: u64,
+) -> anyhow::Result<()> {
+    let mut conn = get_client().get().map_err(|e| anyhow::anyhow!(e))?;
+    let _: () = conn.set_ex(key, value, seconds)?;
+    Ok(())
 }
 
 /// 获取Redis的原始连接
