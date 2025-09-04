@@ -5,7 +5,8 @@ use std::sync::LazyLock;
 
 type RedisClient = Pool<Client>;
 
-static REDIS: LazyLock<RedisClient> = LazyLock::new(|| init().expect("Failed to initialize Redis pool"));
+static REDIS: LazyLock<RedisClient> =
+    LazyLock::new(|| init().expect("Failed to initialize Redis pool"));
 
 const CONNECTION_TEST_KEY: &str = "connection_test_key";
 
@@ -41,21 +42,21 @@ fn get_client() -> &'static RedisClient {
 }
 
 /// 获取Redis中指定键的值
-/// 
+///
 /// # 参数
 /// * `key` - 要获取的键
-/// 
+///
 /// # 返回值
 /// 返回键对应的值，如果键不存在则返回错误
 #[allow(dead_code)]
-pub fn get<T: FromRedisValue>(key: &str) -> anyhow::Result<T> {
+pub fn get<K: ToRedisArgs, T: FromRedisValue>(key: K) -> anyhow::Result<T> {
     let mut client = get_client().get().map_err(|e| anyhow::anyhow!(e))?;
     let result = client.get(key)?;
     Ok(result)
 }
 
 /// 设置键值对并指定过期时间
-/// 
+///
 /// # 参数
 /// * `key` - 键
 /// * `value` - 值
@@ -72,7 +73,7 @@ pub fn set_ex<K: ToRedisArgs, V: ToRedisArgs>(
 }
 
 /// 设置键值对
-/// 
+///
 /// # 参数
 /// * `key` - 键
 /// * `value` - 值
@@ -84,18 +85,18 @@ pub fn set<K: ToRedisArgs, V: ToRedisArgs>(key: K, value: V) -> anyhow::Result<(
 }
 
 /// 删除指定键
-/// 
+///
 /// # 参数
 /// * `key` - 要删除的键
 #[allow(dead_code)]
-pub fn del<K: ToRedisArgs>(key: K) -> anyhow::Result<()> {
+pub fn del<K: ToRedisArgs>(key: &str) -> anyhow::Result<()> {
     let mut client = get_client().get().map_err(|e| anyhow::anyhow!(e))?;
     let _: () = client.del(key)?;
     Ok(())
 }
 
 /// 检查键是否存在
-/// 
+///
 /// # 参数
 /// * `key` - 要检查的键
 pub fn exists<K: ToRedisArgs>(key: K) -> anyhow::Result<bool> {
@@ -105,7 +106,7 @@ pub fn exists<K: ToRedisArgs>(key: K) -> anyhow::Result<bool> {
 }
 
 /// 设置带TTL的键值对
-/// 
+///
 /// # 参数
 /// * `key` - 键
 /// * `value` - 值
@@ -121,7 +122,7 @@ pub fn set_with_expire<K: ToRedisArgs, V: ToRedisArgs>(
 }
 
 /// 获取Redis的原始连接
-/// 
+///
 /// # 返回值
 /// 返回一个Redis连接
 pub fn raw_connection() -> anyhow::Result<r2d2::PooledConnection<Client>> {
