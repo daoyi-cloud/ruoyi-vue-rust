@@ -25,4 +25,4 @@ bcrypt.workspace = true
 jsonwebtoken.workspace = true
 wax.workspace = true
 redis.workspace = true
-r2d2.workspace = true
+deadpool-redis.workspace = true

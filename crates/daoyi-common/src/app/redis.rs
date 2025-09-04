@@ -1,35 +1,35 @@
 use crate::config;
-use redis::{AsyncCommands, Client, FromRedisValue, ToRedisArgs, aio::MultiplexedConnection};
-use std::sync::Arc;
+use deadpool_redis::{Config, Runtime, Pool, Connection};
+use redis::{FromRedisValue, ToRedisArgs, AsyncCommands};
 use tokio::sync::OnceCell;
 
-type RedisClient = Client;
-
-static REDIS: OnceCell<Arc<RedisClient>> = OnceCell::const_new();
+static REDIS: OnceCell<Pool> = OnceCell::const_new();
 
 const CONNECTION_TEST_KEY: &str = "connection_test_key";
 
-async fn init() -> anyhow::Result<Arc<RedisClient>> {
+async fn init() -> anyhow::Result<Pool> {
     let redis_config = config::get().redis();
     let host = redis_config.host();
     let port = redis_config.port();
     let db = redis_config.database();
     let passwd = redis_config.password();
-    let client = if passwd.is_empty() {
-        Client::open(format!("redis://{host}:{port}/{db}"))?
+    
+    let url = if passwd.is_empty() {
+        format!("redis://{host}:{port}/{db}")
     } else {
-        Client::open(format!("redis://:{passwd}@{host}:{port}/{db}"))?
+        format!("redis://:{passwd}@{host}:{port}/{db}")
     };
-
+    
+    let cfg = Config::from_url(url);
+    let pool = cfg.create_pool(Some(Runtime::Tokio1))?;
+    
     // 测试连接
-    let mut conn = client.get_multiplexed_async_connection().await?;
-    let _: () = conn
-        .set(CONNECTION_TEST_KEY, xid::new().to_string())
-        .await?;
+    let mut conn = pool.get().await?;
+    let _: () = conn.set(CONNECTION_TEST_KEY, xid::new().to_string()).await?;
     let val: String = conn.get(CONNECTION_TEST_KEY).await?;
-
+        
     tracing::info!("Redis connected successfully, {CONNECTION_TEST_KEY} = {val}");
-    Ok(Arc::new(client))
+    Ok(pool)
 }
 
 /// 初始化Redis客户端
@@ -38,11 +38,9 @@ pub async fn init_redis() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// 获取Redis客户端实例
-fn get_client() -> anyhow::Result<&'static Arc<RedisClient>> {
-    REDIS
-        .get()
-        .ok_or_else(|| anyhow::anyhow!("Redis client not initialized"))
+/// 获取Redis连接池实例
+fn get_pool() -> anyhow::Result<&'static Pool> {
+    REDIS.get().ok_or_else(|| anyhow::anyhow!("Redis pool not initialized"))
 }
 
 /// 测试Redis连接
@@ -61,8 +59,8 @@ pub async fn test_redis() -> anyhow::Result<String> {
 /// 返回键对应的值，如果键不存在则返回错误
 #[allow(dead_code)]
 pub async fn get<T: FromRedisValue>(key: &str) -> anyhow::Result<T> {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let result = conn.get(key).await?;
     Ok(result)
 }
@@ -79,8 +77,8 @@ where
     K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let _: () = conn.set_ex(key, value, seconds).await?;
     Ok(())
 }
@@ -96,8 +94,8 @@ where
     K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let _: () = conn.set(key, value).await?;
     Ok(())
 }
@@ -111,8 +109,8 @@ pub async fn del<K>(key: K) -> anyhow::Result<()>
 where
     K: ToRedisArgs + Send + Sync + 'static,
 {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let _: () = conn.del(key).await?;
     Ok(())
 }
@@ -125,8 +123,8 @@ pub async fn exists<K>(key: K) -> anyhow::Result<bool>
 where
     K: ToRedisArgs + Send + Sync + 'static,
 {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let result = conn.exists(key).await?;
     Ok(result)
 }
@@ -142,18 +140,18 @@ where
     K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
-    let client = get_client()?;
-    let mut conn = client.get_multiplexed_async_connection().await?;
+    let pool = get_pool()?;
+    let mut conn = pool.get().await?;
     let _: () = conn.set_ex(key, value, seconds).await?;
     Ok(())
 }
 
-/// 获取Redis的原始异步连接
+/// 获取Redis的原始连接
 ///
 /// # 返回值
-/// 返回一个Redis异步连接
-pub async fn raw_connection() -> anyhow::Result<MultiplexedConnection> {
-    let client = get_client()?;
-    let conn = client.get_multiplexed_async_connection().await?;
+/// 返回一个Redis连接
+pub async fn raw_connection() -> anyhow::Result<Connection> {
+    let pool = get_pool()?;
+    let conn = pool.get().await?;
     Ok(conn)
 }
