@@ -2,6 +2,7 @@ use axum::Router;
 use daoyi_common::app::AppState;
 
 mod auth;
+mod redis;
 mod user;
 
 pub fn create_router() -> Router<AppState> {
@@ -9,7 +10,8 @@ pub fn create_router() -> Router<AppState> {
         "/api",
         Router::new()
             .nest("/users", user::create_router())
-            .nest("/auth", auth::create_router()),
+            .nest("/auth", auth::create_router())
+            .nest("/redis", redis::create_router()),
     )
 }
 

@@ -25,11 +25,11 @@ fn init() -> anyhow::Result<Pool<Client>> {
     Ok(pool)
 }
 
-pub fn test_redis() -> anyhow::Result<()> {
+pub fn test_redis() -> anyhow::Result<String> {
     init()?;
     let v: String = get("CONNECTION_TEST_KEY")?;
     tracing::info!("Redis test success...CONNECTION_TEST_KEY={v}");
-    Ok(())
+    Ok(v)
 }
 
 fn get_client() -> &'static RedisClient {
