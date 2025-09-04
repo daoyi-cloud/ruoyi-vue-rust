@@ -9,5 +9,5 @@ pub fn create_router() -> Router<AppState> {
 }
 
 async fn current_test_key() -> ApiJsonResult<String> {
-    api_json_ok(app_redis::test_redis()?)
+    api_json_ok(app_redis::test_redis().await?)
 }
