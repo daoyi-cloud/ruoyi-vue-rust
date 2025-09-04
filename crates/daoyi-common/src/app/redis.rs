@@ -89,7 +89,7 @@ pub fn set<K: ToRedisArgs, V: ToRedisArgs>(key: K, value: V) -> anyhow::Result<(
 /// # 参数
 /// * `key` - 要删除的键
 #[allow(dead_code)]
-pub fn del<K: ToRedisArgs>(key: &str) -> anyhow::Result<()> {
+pub fn del<K: ToRedisArgs>(key: K) -> anyhow::Result<()> {
     let mut client = get_client().get().map_err(|e| anyhow::anyhow!(e))?;
     let _: () = client.del(key)?;
     Ok(())
