@@ -15,3 +15,4 @@ redis:
 auth:
   ignore_urls:
     - /demo/api/auth/login
+    - /demo/api/redis/current-test-key
