@@ -1,12 +1,10 @@
 use crate::entity::{prelude::*, sys_user, sys_user::ActiveModel};
 use anyhow::Context;
-use axum::{
-    extract::State,
-    {Router, debug_handler, routing},
-};
+use axum::{Router, debug_handler, routing};
 use daoyi_common::app::{
     AppState,
     common::{Page, PaginationParams},
+    database,
     enumeration::Gender,
     error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
     path::Path,
@@ -53,25 +51,22 @@ pub struct UserParams {
 }
 
 #[debug_handler]
-async fn create(
-    State(AppState { db }): State<AppState>,
-    ValidJson(params): ValidJson<UserParams>,
-) -> ApiJsonResult<sys_user::Model> {
+async fn create(ValidJson(params): ValidJson<UserParams>) -> ApiJsonResult<sys_user::Model> {
     let mut active_model = params.into_active_model();
     active_model.password =
         ActiveValue::Set(encode_password(&active_model.password.take().unwrap())?);
-    let model = active_model.insert(&db).await?;
+    let model = active_model.insert(database::get()?).await?;
     api_json_ok(model)
 }
 
 #[debug_handler]
 async fn update(
-    State(AppState { db }): State<AppState>,
     Path(id): Path<String>,
     ValidJson(params): ValidJson<UserParams>,
 ) -> ApiJsonResult<sys_user::Model> {
+    let db = database::get()?;
     let existed_user = SysUser::find_by_id(&id)
-        .one(&db)
+        .one(db)
         .await?
         .ok_or_else(|| ApiError::Biz(String::from("待修改用户不存在")))?;
     let old_password = existed_user.password.clone();
@@ -86,20 +81,18 @@ async fn update(
         exist_active_model.password =
             ActiveValue::Set(encode_password(&active_model.password.take().unwrap())?);
     }
-    let result = exist_active_model.update(&db).await?;
+    let result = exist_active_model.update(db).await?;
     api_json_ok(result)
 }
 
 #[debug_handler]
-async fn delete(
-    State(AppState { db }): State<AppState>,
-    Path(id): Path<String>,
-) -> ApiJsonResult<()> {
+async fn delete(Path(id): Path<String>) -> ApiJsonResult<()> {
+    let db = database::get()?;
     let existed_user = SysUser::find_by_id(&id)
-        .one(&db)
+        .one(db)
         .await?
         .ok_or_else(|| ApiError::Biz(String::from("待删除用户不存在")))?;
-    let result = existed_user.delete(&db).await?;
+    let result = existed_user.delete(db).await?;
     tracing::info!(
         "Delete user: {}, affected rows: {}",
         id,
@@ -110,12 +103,12 @@ async fn delete(
 
 #[debug_handler]
 async fn find_page(
-    State(AppState { db }): State<AppState>,
     ValidQuery(QueryUserParams {
         keyword,
         pagination,
     }): ValidQuery<QueryUserParams>,
 ) -> ApiJsonResult<Page<sys_user::Model>> {
+    let db = database::get()?;
     let paginator = SysUser::find()
         .apply_if(keyword.as_ref(), |query, keyword| {
             query.filter(
@@ -125,7 +118,7 @@ async fn find_page(
             )
         })
         .order_by_desc(sys_user::Column::CreatedAt)
-        .paginate(&db, pagination.size);
+        .paginate(db, pagination.size);
     let total = paginator.num_items().await?;
     let items = paginator.fetch_page(pagination.page - 1).await?;
     let page = Page::from_pagination(pagination, total, items);
@@ -134,9 +127,7 @@ async fn find_page(
 
 #[debug_handler]
 #[tracing::instrument(name = "query_users", skip_all, fields(pay_method = "alipay"))]
-async fn query_users(
-    State(AppState { db }): State<AppState>,
-) -> ApiJsonResult<Vec<sys_user::Model>> {
+async fn query_users() -> ApiJsonResult<Vec<sys_user::Model>> {
     tracing::warn!("假装出现错误了");
     // 假装超时了
     // tokio::time::sleep(std::time::Duration::from_secs(225)).await;
@@ -153,7 +144,7 @@ async fn query_users(
                         .add(sys_user::Column::Enabled.eq(true)),
                 ),
         )
-        .all(&db)
+        .all(database::get()?)
         .await
         .context("查询用户列表失败")?;
     api_json_ok(users)

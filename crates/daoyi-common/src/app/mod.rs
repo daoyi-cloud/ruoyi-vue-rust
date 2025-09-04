@@ -21,26 +21,23 @@ pub mod validation;
 
 use crate::config;
 use axum::Router;
-use sea_orm::DatabaseConnection;
 
 #[derive(Clone)]
-pub struct AppState {
-    pub db: DatabaseConnection,
-}
+pub struct AppState {}
 
 impl AppState {
-    pub fn new(db: DatabaseConnection) -> Self {
-        Self { db }
+    pub fn new() -> Self {
+        Self {}
     }
 }
 
 pub async fn run(router: Router<AppState>) -> anyhow::Result<()> {
     logger::init();
-    id::init()?;
     tracing::info!("Starting app server...");
-    let db = database::init().await?;
+    id::init()?;
     redis::init_redis().await?;
-    let state = AppState::new(db);
+    database::init_db().await?;
+    let state = AppState::new();
     let server = server::Server::new(config::get().server());
 
     server.start(state, router).await

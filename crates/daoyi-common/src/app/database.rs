@@ -4,7 +4,21 @@ use sea_orm::{
 };
 use std::cmp::max;
 use std::time::Duration;
-pub async fn init() -> anyhow::Result<DatabaseConnection> {
+use tokio::sync::OnceCell;
+
+static DB: OnceCell<DatabaseConnection> = OnceCell::const_new();
+/// 初始化DB客户端
+pub async fn init_db() -> anyhow::Result<()> {
+    DB.get_or_try_init(|| init()).await?;
+    Ok(())
+}
+
+/// 获取DB连接实例
+pub fn get() -> anyhow::Result<&'static DatabaseConnection> {
+    DB.get()
+        .ok_or_else(|| anyhow::anyhow!("DatabaseConnection not initialized"))
+}
+async fn init() -> anyhow::Result<DatabaseConnection> {
     let database_config = config::get().database();
     let mut options = ConnectOptions::new(format!(
         "postgres://{}:{}@{}:{}/{}",
