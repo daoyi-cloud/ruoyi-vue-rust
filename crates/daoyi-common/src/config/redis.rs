@@ -6,6 +6,8 @@ pub struct RedisConfig {
     port: Option<u16>,
     password: Option<String>,
     database: Option<u8>,
+    cache_key_prefix: Option<String>,
+    expire_seconds: Option<u64>,
 }
 
 impl RedisConfig {
@@ -20,5 +22,13 @@ impl RedisConfig {
     }
     pub fn database(&self) -> u8 {
         self.database.unwrap_or(0u8)
+    }
+    
+    pub fn cache_key_prefix(&self) -> &str {
+        self.cache_key_prefix.as_deref().unwrap_or("app:ruoyi-vue-rust")
+    }
+    
+    pub fn expire_seconds(&self) -> u64 {
+        self.expire_seconds.unwrap_or(60)
     }
 }

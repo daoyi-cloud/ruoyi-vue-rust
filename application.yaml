@@ -12,6 +12,7 @@ redis:
   port: 6379
   password: 123456789
   database: 0
+  expire_seconds: 60
 tenant:
   enabled: true
   header_name: tenant-id

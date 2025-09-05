@@ -1,6 +1,6 @@
 use crate::config;
-use deadpool_redis::{Config, Runtime, Pool, Connection};
-use redis::{FromRedisValue, ToRedisArgs, AsyncCommands};
+use deadpool_redis::{Config, Connection, Pool, Runtime};
+use redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
 use tokio::sync::OnceCell;
 
 static REDIS: OnceCell<Pool> = OnceCell::const_new();
@@ -13,21 +13,23 @@ async fn init() -> anyhow::Result<Pool> {
     let port = redis_config.port();
     let db = redis_config.database();
     let passwd = redis_config.password();
-    
+
     let url = if passwd.is_empty() {
         format!("redis://{host}:{port}/{db}")
     } else {
         format!("redis://:{passwd}@{host}:{port}/{db}")
     };
-    
+
     let cfg = Config::from_url(url);
     let pool = cfg.create_pool(Some(Runtime::Tokio1))?;
-    
+
     // 测试连接
     let mut conn = pool.get().await?;
-    let _: () = conn.set(CONNECTION_TEST_KEY, xid::new().to_string()).await?;
+    let _: () = conn
+        .set(CONNECTION_TEST_KEY, xid::new().to_string())
+        .await?;
     let val: String = conn.get(CONNECTION_TEST_KEY).await?;
-        
+
     tracing::info!("Redis connected successfully, {CONNECTION_TEST_KEY} = {val}");
     Ok(pool)
 }
@@ -40,7 +42,9 @@ pub async fn init_redis() -> anyhow::Result<()> {
 
 /// 获取Redis连接池实例
 fn get_pool() -> anyhow::Result<&'static Pool> {
-    REDIS.get().ok_or_else(|| anyhow::anyhow!("Redis pool not initialized"))
+    REDIS
+        .get()
+        .ok_or_else(|| anyhow::anyhow!("Redis pool not initialized"))
 }
 
 /// 测试Redis连接
@@ -48,6 +52,34 @@ pub async fn test_redis() -> anyhow::Result<String> {
     let v: String = get(CONNECTION_TEST_KEY).await?;
     tracing::info!("Redis test success...{CONNECTION_TEST_KEY}={v}");
     Ok(v)
+}
+
+fn key_generator(key: &str) -> String {
+    let cache_key_prefix = config::get().redis().cache_key_prefix();
+    format!("{}:{}", cache_key_prefix, key)
+}
+
+pub async fn cache_get<V>(key: &str) -> anyhow::Result<Option<V>>
+where
+    V: FromRedisValue + Send + Sync + 'static,
+{
+    let value = get(key_generator(key).as_ref()).await?;
+    Ok(value)
+}
+pub async fn cache_set<V>(key: &str, value: V) -> anyhow::Result<()>
+where
+    V: ToRedisArgs + Send + Sync + 'static,
+{
+    let expire_seconds = config::get().redis().expire_seconds();
+    cache_set_ex(key, value, expire_seconds).await
+}
+
+pub async fn cache_set_ex<V>(key: &str, value: V, expire_seconds: u64) -> anyhow::Result<()>
+where
+    V: ToRedisArgs + Send + Sync + 'static,
+{
+    set_ex(key_generator(key).as_ref(), value, expire_seconds).await?;
+    Ok(())
 }
 
 /// 获取Redis中指定键的值
@@ -72,9 +104,8 @@ pub async fn get<T: FromRedisValue>(key: &str) -> anyhow::Result<T> {
 /// * `value` - 值
 /// * `seconds` - 过期时间（秒）
 #[allow(dead_code)]
-pub async fn set_ex<K, V>(key: K, value: V, seconds: u64) -> anyhow::Result<()>
+pub async fn set_ex<V>(key: &str, value: V, seconds: u64) -> anyhow::Result<()>
 where
-    K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
     let pool = get_pool()?;
@@ -89,9 +120,8 @@ where
 /// * `key` - 键
 /// * `value` - 值
 #[allow(dead_code)]
-pub async fn set<K, V>(key: K, value: V) -> anyhow::Result<()>
+pub async fn set<V>(key: &str, value: V) -> anyhow::Result<()>
 where
-    K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
     let pool = get_pool()?;
@@ -105,10 +135,7 @@ where
 /// # 参数
 /// * `key` - 要删除的键
 #[allow(dead_code)]
-pub async fn del<K>(key: K) -> anyhow::Result<()>
-where
-    K: ToRedisArgs + Send + Sync + 'static,
-{
+pub async fn del(key: &str) -> anyhow::Result<()> {
     let pool = get_pool()?;
     let mut conn = pool.get().await?;
     let _: () = conn.del(key).await?;
@@ -119,10 +146,7 @@ where
 ///
 /// # 参数
 /// * `key` - 要检查的键
-pub async fn exists<K>(key: K) -> anyhow::Result<bool>
-where
-    K: ToRedisArgs + Send + Sync + 'static,
-{
+pub async fn exists(key: &str) -> anyhow::Result<bool> {
     let pool = get_pool()?;
     let mut conn = pool.get().await?;
     let result = conn.exists(key).await?;
@@ -135,9 +159,8 @@ where
 /// * `key` - 键
 /// * `value` - 值
 /// * `seconds` - 过期时间（秒）
-pub async fn set_with_expire<K, V>(key: K, value: V, seconds: u64) -> anyhow::Result<()>
+pub async fn set_with_expire<V>(key: &str, value: V, seconds: u64) -> anyhow::Result<()>
 where
-    K: ToRedisArgs + Send + Sync + 'static,
     V: ToRedisArgs + Send + Sync + 'static,
 {
     let pool = get_pool()?;

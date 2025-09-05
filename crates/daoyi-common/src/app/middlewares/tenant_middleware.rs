@@ -2,7 +2,7 @@ use crate::app::enumeration::CommonStatusEnum;
 use crate::app::errors::TENANT_EXPIRE;
 use crate::app::utils::is_expired;
 use crate::app::{
-    TenantContextHolder, database,
+    TenantContextHolder, app_redis, database,
     errors::{
         TENANT_DISABLE, TENANT_NOT_EXISTS,
         error::{ApiError, ApiResult},
@@ -85,6 +85,12 @@ impl AsyncAuthorizeRequest<Body> for TenantAuth {
 }
 
 async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
+    let cache_key = &format!("valid_tenant:{}", tenant_id);
+    if let Some(t) = app_redis::cache_get::<bool>(cache_key).await? {
+        if t {
+            return Ok(());
+        }
+    }
     let db = database::get()?;
     let tenant = SystemTenant::find_by_id(tenant_id).one(db).await?;
     if tenant.is_none() {
@@ -97,6 +103,7 @@ async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
     if is_expired(tenant.expire_time)? {
         return Err(ApiError::BizCodeWithArgs(TENANT_EXPIRE, vec![tenant.name]));
     }
+    app_redis::cache_set(cache_key, true).await?;
     Ok(())
 }
 

@@ -34,7 +34,7 @@ impl TenantConfig {
 }
 
 fn default_ignore_urls() -> Vec<String> {
-    vec![String::from("/demo/api/auth/login")]
+    vec![]
 }
 fn default_header_name() -> String {
     String::from("X-Tenant-Id")
