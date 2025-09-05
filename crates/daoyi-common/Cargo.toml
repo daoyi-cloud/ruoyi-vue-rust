@@ -26,4 +26,5 @@ jsonwebtoken.workspace = true
 wax.workspace = true
 redis.workspace = true
 deadpool-redis.workspace = true
+chrono.workspace = true
 daoyi-entities-system.workspace = true

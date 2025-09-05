@@ -2,6 +2,8 @@ use crate::app::{
     errors::error::{ApiError, ApiResult},
     id,
 };
+use chrono::Local;
+use sea_orm::prelude::DateTime;
 use std::sync::LazyLock;
 use wax::{Glob, Pattern};
 
@@ -34,4 +36,6 @@ pub fn path_any_matches<A: AsRef<str>>(patterns: &[A], target: &str) -> ApiResul
     Ok(false)
 }
 
-
+pub fn is_expired(t: DateTime) -> ApiResult<bool> {
+    Ok(t.lt(&Local::now().naive_local()))
+}

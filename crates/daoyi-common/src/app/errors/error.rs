@@ -5,6 +5,7 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum_valid::ValidRejection;
 use sea_orm::DbErr;
+use std::fmt::{Debug, Display};
 
 pub type ApiResult<T> = Result<T, ApiError>;
 pub type ApiJsonResult<T> = ApiResult<ApiResponse<T>>;
@@ -52,6 +53,9 @@ pub enum ApiError {
     #[allow(dead_code)]
     #[error("{0}")]
     BizCode(ErrorCode),
+    #[allow(dead_code)]
+    #[error("{0}")]
+    BizCodeWithArgs(ErrorCode, Vec<String>),
     #[error("错误: {0}")]
     Internal(#[from] anyhow::Error),
 }
@@ -70,7 +74,9 @@ impl ApiError {
         match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::MethodNotAllowed => StatusCode::METHOD_NOT_ALLOWED,
-            ApiError::Biz(_) | ApiError::BizCode(_) => StatusCode::OK,
+            ApiError::Biz(_) | ApiError::BizCode(_) | ApiError::BizCodeWithArgs(_, _) => {
+                StatusCode::OK
+            }
             ApiError::Internal(_) | ApiError::Database(_) | ApiError::Bcrypt(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
@@ -86,13 +92,13 @@ impl ApiError {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = self.status_code();
-        let body = match self { 
-            ApiError::BizCode(ec) => {
-                ApiResponse::biz_err(ec)
-            },
-            err => {
-                ApiResponse::<()>::err(err.to_string())
+        let body = match self {
+            // ApiResponse::biz_err_with_args(ec, &args.iter().map(|s| s.as_str()).collect::<Vec<_>>())
+            ApiError::BizCodeWithArgs(ec, args) => {
+                ApiResponse::biz_err_with_args(ec, &args.iter().map(|s| s.as_str()).collect::<Vec<_>>())
             }
+            ApiError::BizCode(ec) => ApiResponse::biz_err(ec),
+            err => ApiResponse::<()>::err(err.to_string()),
         };
         let body = axum::Json(body);
         (status_code, body).into_response()

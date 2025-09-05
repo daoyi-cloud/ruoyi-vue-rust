@@ -31,6 +31,27 @@ impl ErrorCode {
     pub fn msg(&self) -> &str {
         self.msg
     }
+
+    /// 创建带有动态参数的错误消息
+    ///
+    /// # 参数
+    /// * `args` - 一个包含要填充到占位符中的值的切片
+    ///
+    /// # 返回值
+    /// * 返回格式化后的错误消息字符串
+    pub fn format_message(&self, args: &[&dyn Display]) -> String {
+        let mut result = self.msg.to_string();
+
+        for arg in args {
+            // 找到第一个 {} 并替换它
+            if let Some(pos) = result.find("{}") {
+                let arg_str = format!("{}", arg);
+                result.replace_range(pos..pos + 2, &arg_str);
+            }
+        }
+
+        result
+    }
 }
 
 impl Display for ErrorCode {

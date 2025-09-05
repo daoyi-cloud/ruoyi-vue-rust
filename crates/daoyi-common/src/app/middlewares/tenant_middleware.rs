@@ -15,6 +15,8 @@ use sea_orm::prelude::*;
 use std::pin::Pin;
 use std::sync::LazyLock;
 use tower_http::auth::{AsyncAuthorizeRequest, AsyncRequireAuthorizationLayer};
+use crate::app::errors::TENANT_EXPIRE;
+use crate::app::utils::is_expired;
 
 static TENANT_LAYER: LazyLock<AsyncRequireAuthorizationLayer<TenantAuth>> =
     LazyLock::new(|| AsyncRequireAuthorizationLayer::<TenantAuth>::new(TenantAuth));
@@ -92,7 +94,9 @@ async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
     if CommonStatusEnum::is_disable(tenant.status as i32) {
         return Err(ApiError::BizCode(TENANT_DISABLE));
     }
-    let time = tenant.expire_time;
+    if is_expired(tenant.expire_time)? { 
+        return Err(ApiError::BizCode(TENANT_EXPIRE));
+    }
     Ok(())
 }
 

@@ -4,6 +4,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiResponse<T> {
@@ -32,6 +33,14 @@ impl<T> ApiResponse<T> {
 
     pub fn biz_err(error_code: ErrorCode) -> Self {
         Self::new(error_code.code(), String::from(error_code.msg()), None)
+    }
+
+    pub fn biz_err_with_args(error_code: ErrorCode, args: &[&dyn Display]) -> Self {
+        Self::new(
+            error_code.code(),
+            String::from(error_code.format_message(args)),
+            None,
+        )
     }
 }
 
