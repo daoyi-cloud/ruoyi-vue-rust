@@ -7,6 +7,12 @@ pub struct TenantContextHolder {
 }
 
 impl TenantContextHolder {
+    pub fn ignore(&self) -> bool {
+        self.ignore
+    }
+    pub fn tenant_id(&self) -> i64 {
+        self.tenant_id
+    }
     pub fn set_tenant_id(tenant_id: i64) -> Self {
         Self {
             tenant_id,
