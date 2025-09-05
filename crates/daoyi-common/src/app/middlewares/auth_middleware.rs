@@ -1,7 +1,7 @@
 use crate::app::utils::path_any_matches;
 use crate::app::{
     auth::{JWT, get_default_jwt},
-    error::ApiError,
+    errors::error::ApiError,
 };
 use crate::config;
 use axum::body::Body;

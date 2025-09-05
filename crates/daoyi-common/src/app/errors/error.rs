@@ -1,3 +1,4 @@
+use super::ErrorCode;
 use crate::app::response::ApiResponse;
 use axum::extract::rejection::{JsonRejection, PathRejection, QueryRejection};
 use axum::http::StatusCode;
@@ -48,6 +49,9 @@ pub enum ApiError {
     #[allow(dead_code)]
     #[error("{0}")]
     Biz(String),
+    #[allow(dead_code)]
+    #[error("{0}")]
+    BizCode(ErrorCode),
     #[error("错误: {0}")]
     Internal(#[from] anyhow::Error),
 }
@@ -66,7 +70,7 @@ impl ApiError {
         match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::MethodNotAllowed => StatusCode::METHOD_NOT_ALLOWED,
-            ApiError::Biz(_) => StatusCode::OK,
+            ApiError::Biz(_) | ApiError::BizCode(_) => StatusCode::OK,
             ApiError::Internal(_) | ApiError::Database(_) | ApiError::Bcrypt(_) => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
@@ -82,7 +86,15 @@ impl ApiError {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = self.status_code();
-        let body = axum::Json(ApiResponse::<()>::err(self.to_string()));
+        let body = match self { 
+            ApiError::BizCode(ec) => {
+                ApiResponse::biz_err(ec)
+            },
+            err => {
+                ApiResponse::<()>::err(err.to_string())
+            }
+        };
+        let body = axum::Json(body);
         (status_code, body).into_response()
     }
 }

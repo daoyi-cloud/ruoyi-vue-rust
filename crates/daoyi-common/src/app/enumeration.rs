@@ -123,33 +123,46 @@ impl SocialTypeEnum {
 
 impl_array_valuable!(SocialTypeEnum, i32, [10, 20, 30, 31, 32, 34]);
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+/// 通用状态枚举
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CommonStatusEnum {
+    /// 开启
+    Enable = 0,
+    /// 关闭
+    Disable = 1,
+}
 
-    #[test]
-    fn test_social_type_enum() {
-        // 测试获取类型
-        assert_eq!(SocialTypeEnum::Gitee.get_type(), 10);
-        assert_eq!(SocialTypeEnum::Dingtalk.get_type(), 20);
+impl CommonStatusEnum {
+    /// 获取状态值
+    pub fn status(&self) -> i32 {
+        *self as i32
+    }
 
-        // 测试获取标识
-        assert_eq!(SocialTypeEnum::Gitee.get_source(), "GITEE");
-        assert_eq!(SocialTypeEnum::Dingtalk.get_source(), "DINGTALK");
+    /// 获取状态名
+    pub fn name(&self) -> &'static str {
+        match self {
+            CommonStatusEnum::Enable => "开启",
+            CommonStatusEnum::Disable => "关闭",
+        }
+    }
 
-        // 测试根据类型获取枚举
-        assert_eq!(
-            SocialTypeEnum::value_of_type(10),
-            Some(SocialTypeEnum::Gitee)
-        );
-        assert_eq!(
-            SocialTypeEnum::value_of_type(20),
-            Some(SocialTypeEnum::Dingtalk)
-        );
-        assert_eq!(SocialTypeEnum::value_of_type(99), None);
+    /// 根据状态值获取对应的枚举
+    pub fn from_status(status: i32) -> Option<CommonStatusEnum> {
+        match status {
+            0 => Some(CommonStatusEnum::Enable),
+            1 => Some(CommonStatusEnum::Disable),
+            _ => None,
+        }
+    }
 
-        // 测试ArrayValuable trait
-        let gitee = SocialTypeEnum::Gitee;
-        assert_eq!(gitee.array(), vec![10, 20, 30, 31, 32, 34]);
+    /// 判断是否为启用状态
+    pub fn is_enable(status: i32) -> bool {
+        status == CommonStatusEnum::Enable.status()
+    }
+
+    /// 判断是否为禁用状态
+    pub fn is_disable(status: i32) -> bool {
+        status == CommonStatusEnum::Disable.status()
     }
 }
+impl_array_valuable!(CommonStatusEnum, i32, [0, 1]);

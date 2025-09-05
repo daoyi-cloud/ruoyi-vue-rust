@@ -1,5 +1,5 @@
 use crate::app::{
-    error::{ApiError, ApiResult},
+    errors::error::{ApiError, ApiResult},
     id,
 };
 use std::sync::LazyLock;
@@ -25,11 +25,13 @@ pub fn path_matches(pattern: &str, target: &str) -> ApiResult<bool> {
     Ok(glob.is_match(target))
 }
 
-pub fn path_any_matches(patterns: &[String], target: &str) -> ApiResult<bool> {
+pub fn path_any_matches<A: AsRef<str>>(patterns: &[A], target: &str) -> ApiResult<bool> {
     for pattern in patterns {
-        if path_matches(pattern, target)? {
+        if path_matches(pattern.as_ref(), target)? {
             return Ok(true);
         }
     }
     Ok(false)
 }
+
+

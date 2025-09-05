@@ -2,6 +2,7 @@ mod auth;
 mod database;
 mod redis;
 mod server;
+mod tenant;
 
 use anyhow::{Context, anyhow};
 pub use auth::AuthConfig;
@@ -11,6 +12,7 @@ pub use redis::RedisConfig;
 use serde::Deserialize;
 pub use server::ServerConfig;
 use std::sync::LazyLock;
+pub use tenant::TenantConfig;
 
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(|| AppConfig::load().expect("Failed to initialize config"));
@@ -21,6 +23,8 @@ pub struct AppConfig {
     database: DatabaseConfig,
     #[serde(default = "AuthConfig::default")]
     auth: AuthConfig,
+    #[serde(default = "TenantConfig::default")]
+    tenant: TenantConfig,
     redis: RedisConfig,
 }
 
@@ -58,6 +62,9 @@ impl AppConfig {
     pub fn auth(&self) -> &AuthConfig {
         &self.auth
     }
+    pub fn tenant(&self) -> &TenantConfig {
+        &self.tenant
+    }
     pub fn redis(&self) -> &RedisConfig {
         &self.redis
     }
@@ -65,4 +72,8 @@ impl AppConfig {
 
 pub fn get() -> &'static AppConfig {
     &CONFIG
+}
+
+pub fn default_bool() -> bool {
+    false
 }

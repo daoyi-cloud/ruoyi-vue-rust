@@ -2,12 +2,10 @@ pub mod auth;
 pub mod common;
 pub mod database;
 pub mod enumeration;
-pub mod error;
 pub mod id;
 pub mod json;
 pub mod latency;
 pub mod logger;
-pub mod middleware;
 pub mod path;
 pub mod query;
 pub mod redis;
@@ -15,12 +13,16 @@ pub use crate::app::redis as app_redis;
 pub mod response;
 pub mod serde;
 pub mod server;
+mod tenant;
 pub mod utils;
 pub mod valid;
 pub mod validation;
+mod middlewares;
+pub mod errors;
 
 use crate::config;
 use axum::Router;
+pub use tenant::TenantContextHolder;
 
 #[derive(Clone)]
 pub struct AppState {}

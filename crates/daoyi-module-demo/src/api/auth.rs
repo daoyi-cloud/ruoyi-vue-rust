@@ -4,7 +4,7 @@ use daoyi_common::app::{
     AppState,
     auth::{Principal, get_default_jwt},
     database,
-    error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
+    errors::error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
     utils::{RANDOM_PASSWORD, verify_password},
     valid::ValidJson,
 };

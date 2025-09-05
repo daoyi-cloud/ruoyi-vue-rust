@@ -1,5 +1,6 @@
 use crate::app::{
-    AppState, auth::Principal, latency::LatencyOnResponse, middleware::get_auth_layer,
+    AppState, auth::Principal, latency::LatencyOnResponse,
+    middlewares::auth_middleware::get_auth_layer,
 };
 use crate::config::ServerConfig;
 use axum::{

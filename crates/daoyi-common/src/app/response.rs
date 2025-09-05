@@ -1,3 +1,4 @@
+use crate::app::errors::ErrorCode;
 use axum::{
     Json,
     response::{IntoResponse, Response},
@@ -27,6 +28,10 @@ impl<T> ApiResponse<T> {
 
     pub fn err<M: AsRef<str>>(message: M) -> Self {
         Self::new(1, String::from(message.as_ref()), None)
+    }
+
+    pub fn biz_err(error_code: ErrorCode) -> Self {
+        Self::new(error_code.code(), String::from(error_code.msg()), None)
     }
 }
 

@@ -6,7 +6,7 @@ use daoyi_common::app::{
     common::{Page, PaginationParams},
     database,
     enumeration::Gender,
-    error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
+    errors::error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
     path::Path,
     utils::encode_password,
     valid::{ValidJson, ValidQuery},

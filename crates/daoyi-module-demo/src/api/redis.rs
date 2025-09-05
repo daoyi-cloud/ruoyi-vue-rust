@@ -1,7 +1,7 @@
 use axum::{Router, routing};
 use daoyi_common::app::{
     AppState, app_redis,
-    error::{ApiJsonResult, api_json_ok},
+    errors::error::{ApiJsonResult, api_json_ok},
 };
 
 pub fn create_router() -> Router<AppState> {

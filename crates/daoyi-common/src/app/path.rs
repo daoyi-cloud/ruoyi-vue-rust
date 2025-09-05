@@ -1,4 +1,4 @@
-use crate::app::error::ApiError;
+use crate::app::errors::error::ApiError;
 use axum::extract::FromRequestParts;
 use axum_valid::HasValidate;
 #[allow(dead_code)]

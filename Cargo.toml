@@ -42,3 +42,5 @@ daoyi-common = { version = "0.1.0", path = "crates/daoyi-common" }
 daoyi-module-demo = { version = "0.1.0", path = "crates/daoyi-module-demo" }
 daoyi-module-infra = { version = "0.1.0", path = "crates/daoyi-module-infra" }
 daoyi-module-system = { version = "0.1.0", path = "crates/daoyi-module-system" }
+daoyi-entities-infra = { version = "0.1.0", path = "crates/daoyi-entities-infra" }
+daoyi-entities-system = { version = "0.1.0", path = "crates/daoyi-entities-system" }

@@ -4,7 +4,7 @@ use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{
     AppState,
     auth::Principal,
-    error::{ApiJsonResult, api_json_ok},
+    errors::error::{ApiJsonResult, api_json_ok},
     valid::ValidJson,
 };
 
