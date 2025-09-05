@@ -1,4 +1,4 @@
-pub mod auth;
+
 pub mod common;
 pub mod database;
 pub mod enumeration;
@@ -19,6 +19,7 @@ pub mod valid;
 pub mod validation;
 mod middlewares;
 pub mod errors;
+pub mod auth;
 
 use crate::config;
 use axum::Router;

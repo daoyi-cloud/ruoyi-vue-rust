@@ -1,3 +1,4 @@
+use super::Principal;
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -6,11 +7,6 @@ use std::time::Duration;
 
 const DEFAULT_SECRET: &str = "se12345c@ret";
 static DEFAULT_JWT: LazyLock<JWT> = LazyLock::new(|| JWT::default());
-#[derive(Debug, Clone, Serialize)]
-pub struct Principal {
-    pub id: String,
-    pub name: String,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -79,7 +75,12 @@ impl JWT {
         let current_timestamp = jsonwebtoken::get_current_timestamp();
         let claims = Claims {
             jti: xid::new().to_string(),
-            sub: format!("{}:{}", principal.id, principal.name),
+            sub: format!(
+                "{}:{}:{}",
+                principal.tenant_id,
+                principal.user_type.value(),
+                principal.user_id
+            ),
             aud: self.audience.clone(),
             iss: self.issuer.clone(),
             iat: current_timestamp,
@@ -95,10 +96,11 @@ impl JWT {
     pub fn decode(&self, token: &str) -> anyhow::Result<Principal> {
         let claims: Claims =
             jsonwebtoken::decode(token, &self.decode_secret, &self.validation)?.claims;
-        let mut parts = claims.sub.splitn(2, ":");
+        let mut parts = claims.sub.splitn(3, ":");
         let principal = Principal {
-            id: parts.next().unwrap().to_string(),
-            name: parts.next().unwrap().to_string(),
+            tenant_id: parts.next().unwrap().parse()?,
+            user_type: parts.next().unwrap().parse()?,
+            user_id: parts.next().unwrap().parse()?,
         };
         Ok(principal)
     }

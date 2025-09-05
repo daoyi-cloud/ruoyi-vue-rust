@@ -61,11 +61,11 @@ async fn create(ValidJson(params): ValidJson<UserParams>) -> ApiJsonResult<sys_u
 
 #[debug_handler]
 async fn update(
-    Path(id): Path<String>,
+    Path(id): Path<i64>,
     ValidJson(params): ValidJson<UserParams>,
 ) -> ApiJsonResult<sys_user::Model> {
     let db = database::get()?;
-    let existed_user = SysUser::find_by_id(&id)
+    let existed_user = SysUser::find_by_id(id)
         .one(db)
         .await?
         .ok_or_else(|| ApiError::Biz(String::from("待修改用户不存在")))?;
@@ -86,9 +86,9 @@ async fn update(
 }
 
 #[debug_handler]
-async fn delete(Path(id): Path<String>) -> ApiJsonResult<()> {
+async fn delete(Path(id): Path<i64>) -> ApiJsonResult<()> {
     let db = database::get()?;
-    let existed_user = SysUser::find_by_id(&id)
+    let existed_user = SysUser::find_by_id(id)
         .one(db)
         .await?
         .ok_or_else(|| ApiError::Biz(String::from("待删除用户不存在")))?;

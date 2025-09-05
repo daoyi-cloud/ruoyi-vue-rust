@@ -2,7 +2,7 @@ use crate::entity::{prelude::*, sys_user};
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{
     AppState,
-    auth::{Principal, get_default_jwt},
+    auth::{Principal, jsonwebtoken_auth::get_default_jwt},
     database,
     errors::error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
     utils::{RANDOM_PASSWORD, verify_password},
@@ -11,6 +11,7 @@ use daoyi_common::app::{
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use daoyi_common::app::enumeration::UserTypeEnum;
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
@@ -51,8 +52,9 @@ async fn login(ValidJson(params): ValidJson<LoginParams>) -> ApiJsonResult<Login
         return Err(ApiError::Biz(String::from("账号或密码不正确")));
     }
     let principal = Principal {
-        id: user.id,
-        name: user.name,
+        tenant_id: 0,
+        user_id: user.id,
+        user_type: UserTypeEnum::Member,
     };
     let access_token = get_default_jwt().encode(&principal)?;
     tracing::info!("登录成功...JWT token: {access_token}");

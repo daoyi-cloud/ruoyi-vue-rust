@@ -2,6 +2,7 @@ use crate::config;
 use deadpool_redis::{Config, Connection, Pool, Runtime};
 use redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
 use tokio::sync::OnceCell;
+use crate::app::id;
 
 static REDIS: OnceCell<Pool> = OnceCell::const_new();
 
@@ -26,7 +27,7 @@ async fn init() -> anyhow::Result<Pool> {
     // 测试连接
     let mut conn = pool.get().await?;
     let _: () = conn
-        .set(CONNECTION_TEST_KEY, xid::new().to_string())
+        .set(CONNECTION_TEST_KEY, id::x())
         .await?;
     let val: String = conn.get(CONNECTION_TEST_KEY).await?;
 

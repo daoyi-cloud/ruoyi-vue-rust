@@ -1,5 +1,7 @@
 use sea_orm::{ActiveValue, IntoActiveValue, prelude::*};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 /// 可生成 T 数组的 trait
 pub trait ArrayValuable<T> {
@@ -20,6 +22,13 @@ macro_rules! impl_array_valuable {
 
 // 使用示例
 // impl_array_valuable!(SocialTypeEnum, i32, [10, 20, 30, 31, 32, 34]);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AuthMethod {
+    Jwt,
+    Db,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, DeriveActiveEnum)]
 #[serde(rename_all = "snake_case")]
@@ -166,3 +175,59 @@ impl CommonStatusEnum {
     }
 }
 impl_array_valuable!(CommonStatusEnum, i32, [0, 1]);
+
+/// 全局用户类型枚举
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum UserTypeEnum {
+    /// 会员 - 面向 c 端，普通用户
+    Member = 1,
+    /// 管理员 - 面向 b 端，管理后台
+    Admin = 2,
+}
+
+impl FromStr for UserTypeEnum {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "1" | "MEMBER" | "Member" | "member" => Ok(UserTypeEnum::Member),
+            "2" | "ADMIN" | "Admin" | "admin" => Ok(UserTypeEnum::Admin),
+            _ => Err(anyhow::anyhow!("Invalid UserTypeEnum value: {}", s)),
+        }
+    }
+}
+
+impl UserTypeEnum {
+    /// 获取类型值
+    pub fn value(&self) -> i32 {
+        *self as i32
+    }
+
+    /// 获取类型名
+    pub fn name(&self) -> &'static str {
+        match self {
+            UserTypeEnum::Member => "会员",
+            UserTypeEnum::Admin => "管理员",
+        }
+    }
+
+    /// 根据值查找对应的枚举 variant
+    pub fn from_value(value: i32) -> Option<UserTypeEnum> {
+        match value {
+            1 => Some(UserTypeEnum::Member),
+            2 => Some(UserTypeEnum::Admin),
+            _ => None,
+        }
+    }
+
+    /// 获取所有枚举值的数组
+    pub fn values() -> Vec<UserTypeEnum> {
+        vec![UserTypeEnum::Member, UserTypeEnum::Admin]
+    }
+}
+impl Display for UserTypeEnum {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}-{}", self.value(), self.name())
+    }
+}
+impl_array_valuable!(UserTypeEnum, i32, [1, 2]);

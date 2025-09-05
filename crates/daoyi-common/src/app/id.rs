@@ -16,6 +16,14 @@ pub fn init() -> anyhow::Result<()> {
     Ok(IdInstance::init(options)?)
 }
 
-pub fn next_id() -> String {
-    IdInstance::next_id().to_string()
+pub fn next_id() -> i64 {
+    IdInstance::next_id()
+}
+
+pub fn next_id_str() -> String {
+    next_id().to_string()
+}
+
+pub fn x() -> String {
+    xid::new().to_string()
 }

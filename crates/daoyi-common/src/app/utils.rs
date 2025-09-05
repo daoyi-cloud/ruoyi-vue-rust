@@ -8,7 +8,7 @@ use std::sync::LazyLock;
 use wax::{Glob, Pattern};
 
 pub static RANDOM_PASSWORD: LazyLock<String> =
-    LazyLock::new(|| encode_password(&id::next_id()).unwrap_or_default());
+    LazyLock::new(|| encode_password(&id::next_id_str()).unwrap_or_default());
 #[allow(dead_code)]
 pub fn encode_password(password: &str) -> ApiResult<String> {
     Ok(bcrypt::hash(password, bcrypt::DEFAULT_COST)?)

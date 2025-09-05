@@ -68,7 +68,7 @@ impl Server {
                 // 尝试从 extensions 中获取用户信息
                 let user_info = ext
                     .get::<Principal>()
-                    .map(|p| format!("user_id:{},user_name:{}", p.id, p.name))
+                    .map(|p| format!("user_id:{},user_type:{}", p.user_id, p.user_type))
                     .unwrap_or_else(|| "unknown".to_string());
                 tracing::info_span!(
                     "api req ",
