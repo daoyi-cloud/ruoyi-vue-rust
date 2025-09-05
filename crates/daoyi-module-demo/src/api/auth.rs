@@ -1,7 +1,8 @@
 use crate::entity::{prelude::*, sys_user};
 use axum::{Extension, Router, debug_handler, routing};
+use daoyi_common::app::enumeration::UserTypeEnum;
 use daoyi_common::app::{
-    AppState,
+    AppState, TenantContextHolder,
     auth::{Principal, jsonwebtoken_auth::get_default_jwt},
     database,
     errors::error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
@@ -11,7 +12,6 @@ use daoyi_common::app::{
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use daoyi_common::app::enumeration::UserTypeEnum;
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
@@ -35,7 +35,10 @@ pub struct LoginResult {
 
 #[tracing::instrument(name = "login", skip_all, fields(account = %params.account))]
 #[debug_handler]
-async fn login(ValidJson(params): ValidJson<LoginParams>) -> ApiJsonResult<LoginResult> {
+async fn login(
+    Extension(tenant): Extension<TenantContextHolder>,
+    ValidJson(params): ValidJson<LoginParams>,
+) -> ApiJsonResult<LoginResult> {
     tracing::info!("开始处理登录逻辑...");
     let user = SysUser::find()
         .filter(sys_user::Column::Account.eq(&params.account))
@@ -52,7 +55,7 @@ async fn login(ValidJson(params): ValidJson<LoginParams>) -> ApiJsonResult<Login
         return Err(ApiError::Biz(String::from("账号或密码不正确")));
     }
     let principal = Principal {
-        tenant_id: 0,
+        tenant_id: tenant.tenant_id(),
         user_id: user.id,
         user_type: UserTypeEnum::Member,
     };

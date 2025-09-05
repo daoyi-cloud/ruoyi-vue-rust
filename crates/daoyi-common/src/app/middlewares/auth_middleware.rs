@@ -5,9 +5,9 @@ use crate::app::{
 use crate::config;
 use axum::body::Body;
 use axum::http::{Request, Response, header};
+use axum::response::IntoResponse;
 use std::pin::Pin;
 use std::sync::LazyLock;
-use axum::response::IntoResponse;
 use tower_http::auth::{AsyncAuthorizeRequest, AsyncRequireAuthorizationLayer};
 
 static AUTH_LAYER: LazyLock<AsyncRequireAuthorizationLayer<JWTAuth>> =
@@ -59,12 +59,11 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
             let principal = get_default_jwt()
                 .decode(&token)
                 .map_err(|error| ApiError::Internal(error))?;
-            let tenant = request
-                .extensions()
-                .get::<TenantContextHolder>();
+            let tenant = request.extensions().get::<TenantContextHolder>();
             if let Some(tenant) = tenant {
                 if !tenant.ignore() && tenant.tenant_id() != principal.tenant_id {
-
+                    let error = ApiError::Unauthenticated(String::from("租户不匹配"));
+                    return Err(error.into_response());
                 }
             }
             request.extensions_mut().insert(principal);
