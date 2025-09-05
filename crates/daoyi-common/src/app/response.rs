@@ -35,7 +35,7 @@ impl<T> ApiResponse<T> {
         Self::new(error_code.code(), String::from(error_code.msg()), None)
     }
 
-    pub fn biz_err_with_args(error_code: ErrorCode, args: &[&dyn Display]) -> Self {
+    pub fn biz_err_with_args<M: AsRef<str> + Display>(error_code: ErrorCode, args: Vec<M>) -> Self {
         Self::new(
             error_code.code(),
             String::from(error_code.format_message(args)),

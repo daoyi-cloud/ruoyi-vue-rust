@@ -5,7 +5,7 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum_valid::ValidRejection;
 use sea_orm::DbErr;
-use std::fmt::{Debug, Display};
+use std::fmt::Debug;
 
 pub type ApiResult<T> = Result<T, ApiError>;
 pub type ApiJsonResult<T> = ApiResult<ApiResponse<T>>;
@@ -93,11 +93,8 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = self.status_code();
         let body = match self {
-            // ApiResponse::biz_err_with_args(ec, &args.iter().map(|s| s.as_str()).collect::<Vec<_>>())
-            ApiError::BizCodeWithArgs(ec, args) => {
-                ApiResponse::biz_err_with_args(ec, &args.iter().map(|s| s.as_str()).collect::<Vec<_>>())
-            }
-            ApiError::BizCode(ec) => ApiResponse::biz_err(ec),
+            ApiError::BizCodeWithArgs(ec, args) => ApiResponse::<()>::biz_err_with_args(ec, args),
+            ApiError::BizCode(ec) => ApiResponse::<()>::biz_err(ec),
             err => ApiResponse::<()>::err(err.to_string()),
         };
         let body = axum::Json(body);

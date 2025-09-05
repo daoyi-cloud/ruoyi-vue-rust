@@ -39,7 +39,7 @@ impl ErrorCode {
     ///
     /// # 返回值
     /// * 返回格式化后的错误消息字符串
-    pub fn format_message(&self, args: &[&dyn Display]) -> String {
+    pub fn format_message<M: AsRef<str> + Display>(&self, args: Vec<M>) -> String {
         let mut result = self.msg.to_string();
 
         for arg in args {
