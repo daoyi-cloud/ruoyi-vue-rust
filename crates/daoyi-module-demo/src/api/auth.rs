@@ -12,6 +12,7 @@ use daoyi_common::app::{
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use daoyi_common::app::auth::Auth;
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
@@ -59,7 +60,7 @@ async fn login(
         user_id: user.id,
         user_type: UserTypeEnum::Member,
     };
-    let access_token = get_default_jwt().encode(&principal)?;
+    let access_token = get_default_jwt().encode(&principal).await?;
     tracing::info!("登录成功...JWT token: {access_token}");
     api_json_msg_ok("登录成功", LoginResult { access_token })
 }

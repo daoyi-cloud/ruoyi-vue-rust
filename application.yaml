@@ -17,6 +17,7 @@ tenant:
   enabled: true
   header_name: tenant-id
 auth:
+  method: db
   ignore_urls:
     - /demo/api/auth/login
     - /demo/api/redis/current-test-key

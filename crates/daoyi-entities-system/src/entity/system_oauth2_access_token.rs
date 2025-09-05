@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: i64,
     pub user_id: i64,
-    pub user_type: i16,
+    pub user_type: i32,
     pub user_info: String,
     pub access_token: String,
     pub refresh_token: String,

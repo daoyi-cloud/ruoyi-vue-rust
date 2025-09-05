@@ -69,9 +69,10 @@ impl JWT {
             issuer,
         }
     }
+}
 
-    #[allow(dead_code)]
-    pub fn encode(&self, principal: &Principal) -> anyhow::Result<String> {
+impl super::Auth for JWT {
+    async fn encode(&self, principal: &Principal) -> anyhow::Result<String> {
         let current_timestamp = jsonwebtoken::get_current_timestamp();
         let claims = Claims {
             jti: xid::new().to_string(),
@@ -93,7 +94,7 @@ impl JWT {
         )?)
     }
 
-    pub fn decode(&self, token: &str) -> anyhow::Result<Principal> {
+    async fn decode(&self, token: &str) -> anyhow::Result<Principal> {
         let claims: Claims =
             jsonwebtoken::decode(token, &self.decode_secret, &self.validation)?.claims;
         let mut parts = claims.sub.splitn(3, ":");
