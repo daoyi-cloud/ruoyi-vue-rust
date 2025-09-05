@@ -19,7 +19,7 @@ pub struct Model {
     pub mobile: Option<String>,
     pub sex: Option<i16>,
     pub avatar: Option<String>,
-    pub status: i16,
+    pub status: i32,
     pub login_ip: Option<String>,
     pub login_date: Option<DateTime>,
     pub creator: Option<String>,

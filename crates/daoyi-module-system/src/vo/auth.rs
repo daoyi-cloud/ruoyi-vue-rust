@@ -9,7 +9,7 @@ pub struct AuthLoginReqVo {
     /// 验证码，验证码开启时，需要传递
     pub captcha_verification: Option<String>,
     /// 密码
-    pub password: Option<String>,
+    pub password: String,
     /// 授权码
     pub social_code: Option<String>,
     pub social_code_valid: Option<bool>,
@@ -18,7 +18,7 @@ pub struct AuthLoginReqVo {
     /// 社交平台的类型，参见 SocialTypeEnum 枚举值
     pub social_type: Option<SocialTypeEnum>,
     /// 账号
-    pub username: Option<String>,
+    pub username: String,
 }
 /// AuthLoginRespVO，管理后台 - 登录 Response VO
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
