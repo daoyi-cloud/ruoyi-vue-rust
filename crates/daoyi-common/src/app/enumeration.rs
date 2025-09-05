@@ -231,3 +231,52 @@ impl Display for UserTypeEnum {
     }
 }
 impl_array_valuable!(UserTypeEnum, i32, [1, 2]);
+
+/// 登录日志的类型枚举
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum LoginLogTypeEnum {
+    /// 使用账号登录
+    LoginUsername = 100,
+    /// 使用社交登录
+    LoginSocial = 101,
+    /// 使用手机登陆
+    LoginMobile = 103,
+    /// 使用短信登陆
+    LoginSms = 104,
+    /// 自己主动登出
+    LogoutSelf = 200,
+    /// 强制退出
+    LogoutDelete = 202,
+}
+
+impl LoginLogTypeEnum {
+    /// 获取日志类型
+    pub fn type_value(&self) -> i32 {
+        *self as i32
+    }
+
+    /// 根据值查找对应的枚举 variant
+    pub fn from_type_value(value: i32) -> Option<LoginLogTypeEnum> {
+        match value {
+            100 => Some(LoginLogTypeEnum::LoginUsername),
+            101 => Some(LoginLogTypeEnum::LoginSocial),
+            103 => Some(LoginLogTypeEnum::LoginMobile),
+            104 => Some(LoginLogTypeEnum::LoginSms),
+            200 => Some(LoginLogTypeEnum::LogoutSelf),
+            202 => Some(LoginLogTypeEnum::LogoutDelete),
+            _ => None,
+        }
+    }
+
+    /// 获取所有枚举值
+    pub fn values() -> Vec<LoginLogTypeEnum> {
+        vec![
+            LoginLogTypeEnum::LoginUsername,
+            LoginLogTypeEnum::LoginSocial,
+            LoginLogTypeEnum::LoginMobile,
+            LoginLogTypeEnum::LoginSms,
+            LoginLogTypeEnum::LogoutSelf,
+            LoginLogTypeEnum::LogoutDelete,
+        ]
+    }
+}
