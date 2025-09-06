@@ -1,12 +1,13 @@
 use crate::impl_tenant_instance;
+use crate::service::oauth2::OAuth2TokenService;
 use crate::service::user::AdminUserService;
 use crate::vo::auth::{AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo};
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
-use daoyi_common::app::enumeration::CommonStatusEnum;
-use daoyi_common::app::errors::error::{ApiError, ApiResult};
-use daoyi_common::app::errors::{AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED};
-use daoyi_common::app::utils::{RANDOM_PASSWORD, verify_password};
+use daoyi_common_support::utils::enumeration::{UserTypeEnum, oauth2_client_constants};
+use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
+use daoyi_common_support::utils::errors::{AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED};
+use daoyi_common_support::utils::{RANDOM_PASSWORD, enumeration, verify_password};
 use daoyi_entities_system::entity::system_users;
 
 pub struct AdminAuthService {
@@ -14,14 +15,34 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
-    pub async fn login(&self, req_vo: AuthLoginReqVo) -> anyhow::Result<AuthLoginRespVo> {
-        let user = self.authenticate(&req_vo.username, &req_vo.password).await?;
-        Ok(AuthLoginRespVo {
-            access_token: "".to_string(),
-            expires_time: "".to_string(),
-            refresh_token: "".to_string(),
-            user_id: 0,
-        })
+    pub async fn login(&self, req_vo: AuthLoginReqVo) -> ApiResult<AuthLoginRespVo> {
+        let user = self
+            .authenticate(&req_vo.username, &req_vo.password)
+            .await?;
+        self.create_token_after_login_success(
+            user.id,
+            &user.username,
+            enumeration::LoginLogTypeEnum::LoginUsername,
+        )
+        .await
+    }
+
+    pub async fn create_token_after_login_success(
+        &self,
+        user_id: i64,
+        _username: &str,
+        _login_type: enumeration::LoginLogTypeEnum,
+    ) -> ApiResult<AuthLoginRespVo> {
+        // 插入登陆日志
+        // 创建访问令牌
+        let token = OAuth2TokenService::new(self.tenant.clone()).create_access_token(
+            user_id,
+            UserTypeEnum::Admin.value(),
+            oauth2_client_constants::CLIENT_ID_DEFAULT,
+            vec![],
+        ).await?;
+        // 构建返回结果
+        Ok(token.into())
     }
 
     pub async fn authenticate(
@@ -42,7 +63,7 @@ impl AdminAuthService {
         if !result {
             return Err(ApiError::BizCode(AUTH_LOGIN_BAD_CREDENTIALS));
         }
-        if CommonStatusEnum::is_disable(user.status) {
+        if enumeration::CommonStatusEnum::is_disable(user.status) {
             return Err(ApiError::BizCode(AUTH_LOGIN_USER_DISABLED));
         }
         Ok(user)
@@ -50,7 +71,7 @@ impl AdminAuthService {
     pub async fn get_permission_info(
         &self,
         _principal: Principal,
-    ) -> anyhow::Result<AuthPermissionInfoRespVo> {
+    ) -> ApiResult<AuthPermissionInfoRespVo> {
         Ok(AuthPermissionInfoRespVo::default())
     }
 }

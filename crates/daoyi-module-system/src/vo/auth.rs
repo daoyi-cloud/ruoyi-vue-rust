@@ -1,4 +1,5 @@
-use daoyi_common::app::enumeration::SocialTypeEnum;
+use daoyi_entities_system::entity::system_oauth2_access_token;
+use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -16,7 +17,7 @@ pub struct AuthLoginReqVo {
     /// state
     pub social_state: Option<String>,
     /// 社交平台的类型，参见 SocialTypeEnum 枚举值
-    pub social_type: Option<SocialTypeEnum>,
+    pub social_type: Option<i32>,
     /// 账号
     pub username: String,
 }
@@ -27,11 +28,22 @@ pub struct AuthLoginRespVo {
     /// 访问令牌
     pub access_token: String,
     /// 过期时间
-    pub expires_time: String,
+    pub expires_time: DateTime,
     /// 刷新令牌
     pub refresh_token: String,
     /// 用户编号
     pub user_id: i64,
+}
+
+impl From<system_oauth2_access_token::Model> for AuthLoginRespVo {
+    fn from(value: system_oauth2_access_token::Model) -> Self {
+        Self {
+            access_token: value.access_token,
+            expires_time: value.expires_time,
+            refresh_token: value.refresh_token,
+            user_id: value.user_id,
+        }
+    }
 }
 
 /// AuthPermissionInfoRespVO，管理后台 - 登录用户的权限信息 Response VO，额外包括用户信息和角色列表

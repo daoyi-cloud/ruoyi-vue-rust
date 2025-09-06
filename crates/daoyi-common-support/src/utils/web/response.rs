@@ -1,4 +1,4 @@
-use crate::app::errors::ErrorCode;
+use crate::utils::errors::ErrorCode;
 use axum::{
     Json,
     response::{IntoResponse, Response},

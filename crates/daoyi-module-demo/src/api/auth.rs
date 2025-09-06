@@ -1,18 +1,17 @@
 use crate::entity::{prelude::*, sys_user};
 use axum::{Extension, Router, debug_handler, routing};
-use daoyi_common::app::enumeration::UserTypeEnum;
 use daoyi_common::app::{
     AppState, TenantContextHolder,
     auth::{Principal, jsonwebtoken_auth::get_default_jwt},
     database,
-    errors::error::{ApiError, ApiJsonResult, api_json_msg_ok, api_json_ok},
-    utils::{RANDOM_PASSWORD, verify_password},
-    valid::ValidJson,
 };
 use sea_orm::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 use daoyi_common::app::auth::Auth;
+use daoyi_common_support::utils::errors::error::{api_json_msg_ok, api_json_ok, ApiError, ApiJsonResult};
+use daoyi_common_support::utils::{enumeration, verify_password, RANDOM_PASSWORD};
+use daoyi_common_support::utils::web::valid::ValidJson;
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
@@ -58,7 +57,7 @@ async fn login(
     let principal = Principal {
         tenant_id: tenant.tenant_id(),
         user_id: user.id,
-        user_type: UserTypeEnum::Member,
+        user_type: enumeration::UserTypeEnum::Member,
     };
     let access_token = get_default_jwt().encode(&principal).await?;
     tracing::info!("登录成功...JWT token: {access_token}");

@@ -5,12 +5,15 @@ use daoyi_common::app::{
     AppState,
     common::{Page, PaginationParams},
     database,
-    enumeration::Gender,
+};
+use daoyi_common_support::utils::{
+    encode_password, enumeration,
     errors::error::{ApiError, ApiJsonResult, api_empty_ok, api_json_ok},
-    path::Path,
-    utils::encode_password,
-    valid::{ValidJson, ValidQuery},
-    validation::is_mobile_phone,
+    web::{
+        path::Path,
+        valid::{ValidJson, ValidQuery},
+        validation::is_mobile_phone,
+    },
 };
 use sea_orm::{ActiveValue, Condition, IntoActiveModel, QueryOrder, QueryTrait, prelude::*};
 use serde::Deserialize;
@@ -38,7 +41,7 @@ pub struct QueryUserParams {
 pub struct UserParams {
     #[validate(length(min = 1, max = 16, message = "姓名长度1-16"))]
     pub name: String,
-    pub gender: Gender,
+    pub gender: enumeration::Gender,
     #[validate(length(min = 1, max = 16, message = "账号长度1-16"))]
     pub account: String,
     #[validate(length(min = 6, max = 16, message = "密码长度6-16"))]

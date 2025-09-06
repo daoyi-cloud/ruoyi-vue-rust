@@ -224,6 +224,14 @@ impl UserTypeEnum {
     pub fn values() -> Vec<UserTypeEnum> {
         vec![UserTypeEnum::Member, UserTypeEnum::Admin]
     }
+
+    pub fn is_admin(value: i32) -> bool {
+        value == UserTypeEnum::Admin.value()
+    }
+
+    pub fn is_member(value: i32) -> bool {
+        value == UserTypeEnum::Member.value()
+    }
 }
 impl Display for UserTypeEnum {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -277,6 +285,138 @@ impl LoginLogTypeEnum {
             LoginLogTypeEnum::LoginSms,
             LoginLogTypeEnum::LogoutSelf,
             LoginLogTypeEnum::LogoutDelete,
+        ]
+    }
+}
+
+/// OAuth2.0 客户端的通用常量
+///
+/// 对应 Java 中的 OAuth2ClientConstants 接口
+pub mod oauth2_client_constants {
+    /// 默认客户端 ID
+    pub const CLIENT_ID_DEFAULT: &'static str = "default";
+}
+
+/// System Redis Key 常量
+///
+/// 对应 Java 中的 RedisKeyConstants 接口
+pub mod redis_key_constants {
+    /// 指定部门的所有子部门编号数组的缓存
+    ///
+    /// KEY 格式：dept_children_ids:{id}
+    /// VALUE 数据类型：String 子部门编号集合
+    pub const DEPT_CHILDREN_ID_LIST: &'static str = "dept_children_ids";
+
+    /// 角色的缓存
+    ///
+    /// KEY 格式：role:{id}
+    /// VALUE 数据类型：String 角色信息
+    pub const ROLE: &'static str = "role";
+
+    /// 用户拥有的角色编号的缓存
+    ///
+    /// KEY 格式：user_role_ids:{userId}
+    /// VALUE 数据类型：String 角色编号集合
+    pub const USER_ROLE_ID_LIST: &'static str = "user_role_ids";
+
+    /// 拥有指定菜单的角色编号的缓存
+    ///
+    /// KEY 格式：user_role_ids:{menuId}
+    /// VALUE 数据类型：String 角色编号集合
+    pub const MENU_ROLE_ID_LIST: &'static str = "menu_role_ids";
+
+    /// 拥有权限对应的菜单编号数组的缓存
+    ///
+    /// KEY 格式：permission_menu_ids:{permission}
+    /// VALUE 数据类型：String 菜单编号数组
+    pub const PERMISSION_MENU_ID_LIST: &'static str = "permission_menu_ids";
+
+    /// OAuth2 客户端的缓存
+    ///
+    /// KEY 格式：oauth_client:{id}
+    /// VALUE 数据类型：String 客户端信息
+    pub const OAUTH_CLIENT: &'static str = "oauth_client";
+
+    /// 访问令牌的缓存
+    ///
+    /// KEY 格式：oauth2_access_token:{token}
+    /// VALUE 数据类型：String 访问令牌信息
+    ///
+    /// 由于动态过期时间，使用 RedisTemplate 操作
+    pub const OAUTH2_ACCESS_TOKEN: &'static str = "oauth2_access_token";
+
+    /// 站内信模版的缓存
+    ///
+    /// KEY 格式：notify_template:{code}
+    /// VALUE 数据格式：String 模版信息
+    pub const NOTIFY_TEMPLATE: &'static str = "notify_template";
+
+    /// 邮件账号的缓存
+    ///
+    /// KEY 格式：mail_account:{id}
+    /// VALUE 数据格式：String 账号信息
+    pub const MAIL_ACCOUNT: &'static str = "mail_account";
+
+    /// 邮件模版的缓存
+    ///
+    /// KEY 格式：mail_template:{code}
+    /// VALUE 数据格式：String 模版信息
+    pub const MAIL_TEMPLATE: &'static str = "mail_template";
+
+    /// 短信模版的缓存
+    ///
+    /// KEY 格式：sms_template:{id}
+    /// VALUE 数据格式：String 模版信息
+    pub const SMS_TEMPLATE: &'static str = "sms_template";
+
+    /// 小程序订阅模版的缓存
+    ///
+    /// KEY 格式：wxa_subscribe_template:{userType}
+    /// VALUE 数据格式 String, 模版信息
+    pub const WXA_SUBSCRIBE_TEMPLATE: &'static str = "wxa_subscribe_template";
+}
+
+/// 登录结果的枚举类
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum LoginResultEnum {
+    /// 成功
+    Success = 0,
+    /// 账号或密码不正确
+    BadCredentials = 10,
+    /// 用户被禁用
+    UserDisabled = 20,
+    /// 图片验证码不存在
+    CaptchaNotFound = 30,
+    /// 图片验证码不正确
+    CaptchaCodeError = 31,
+}
+
+impl LoginResultEnum {
+    /// 获取结果值
+    pub fn result(&self) -> i32 {
+        *self as i32
+    }
+
+    /// 根据值查找对应的枚举 variant
+    pub fn from_result(value: i32) -> Option<LoginResultEnum> {
+        match value {
+            0 => Some(LoginResultEnum::Success),
+            10 => Some(LoginResultEnum::BadCredentials),
+            20 => Some(LoginResultEnum::UserDisabled),
+            30 => Some(LoginResultEnum::CaptchaNotFound),
+            31 => Some(LoginResultEnum::CaptchaCodeError),
+            _ => None,
+        }
+    }
+
+    /// 获取所有枚举值
+    pub fn values() -> Vec<LoginResultEnum> {
+        vec![
+            LoginResultEnum::Success,
+            LoginResultEnum::BadCredentials,
+            LoginResultEnum::UserDisabled,
+            LoginResultEnum::CaptchaNotFound,
+            LoginResultEnum::CaptchaCodeError,
         ]
     }
 }

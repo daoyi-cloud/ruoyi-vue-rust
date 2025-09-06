@@ -1,6 +1,6 @@
 use axum::Router;
 use daoyi_common::app::AppState;
-use daoyi_common::app::errors::error::{ApiError, ApiResult};
+use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 
 pub fn create_router() -> Router<AppState> {
     Router::new()

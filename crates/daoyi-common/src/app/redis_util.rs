@@ -1,9 +1,9 @@
-use crate::app::id;
 use crate::config;
+use daoyi_common_support::utils::id;
 use deadpool_redis::{Config, Connection, Pool, Runtime};
 use redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
+use serde::Serialize;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
 use tokio::sync::OnceCell;
 
 static REDIS: OnceCell<Pool> = OnceCell::const_new();
@@ -77,6 +77,13 @@ where
 {
     let json_str = serde_json::to_string(value)?;
     cache_set(key_generator(key).as_ref(), json_str).await
+}
+pub async fn cache_set_json_ex<V>(key: &str, value: &V, expire_seconds: u64) -> anyhow::Result<()>
+where
+    V: Serialize,
+{
+    let json_str = serde_json::to_string(value)?;
+    cache_set_ex(key_generator(key).as_ref(), json_str, expire_seconds).await
 }
 
 pub async fn cache_get<V>(key: &str) -> anyhow::Result<Option<V>>

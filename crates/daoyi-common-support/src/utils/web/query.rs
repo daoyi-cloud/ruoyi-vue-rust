@@ -1,12 +1,12 @@
-use crate::app::errors::error::ApiError;
+use crate::utils::errors::error::ApiError;
 use axum::extract::FromRequestParts;
 use axum_valid::HasValidate;
-#[allow(dead_code)]
-#[derive(Debug, Clone, Default, FromRequestParts)]
-#[from_request(via(axum::extract::Path), rejection(ApiError))]
-pub struct Path<T>(pub T);
 
-impl<T> HasValidate for Path<T> {
+#[derive(Debug, Clone, Default, FromRequestParts)]
+#[from_request(via(axum::extract::Query), rejection(ApiError))]
+pub struct Query<T>(pub T);
+
+impl<T> HasValidate for Query<T> {
     type Validate = T;
 
     fn get_validate(&self) -> &Self::Validate {

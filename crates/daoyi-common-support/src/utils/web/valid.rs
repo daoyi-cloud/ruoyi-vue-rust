@@ -1,4 +1,7 @@
-use crate::app::{errors::error::ApiError, json::Json, path::Path, query::Query};
+use crate::utils::{
+    errors::error::ApiError,
+    web::{json::Json, path::Path, query::Query},
+};
 use axum::extract::{FromRequest, FromRequestParts, Request};
 use axum::http::request::Parts;
 

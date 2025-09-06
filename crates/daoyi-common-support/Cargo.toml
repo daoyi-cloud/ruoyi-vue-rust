@@ -1,0 +1,21 @@
+[package]
+name = "daoyi-common-support"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum.workspace = true
+serde.workspace = true
+axum-valid.workspace = true
+sea-orm.workspace = true
+thiserror.workspace = true
+bcrypt.workspace = true
+jsonwebtoken.workspace = true
+anyhow.workspace = true
+idgenerator.workspace = true
+xid.workspace = true
+validator.workspace = true
+regex.workspace = true
+chrono.workspace = true
+wax.workspace = true
+serde_json.workspace = true

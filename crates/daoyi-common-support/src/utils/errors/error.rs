@@ -1,5 +1,5 @@
 use super::ErrorCode;
-use crate::app::response::ApiResponse;
+use crate::utils::web::response::ApiResponse;
 use axum::extract::rejection::{JsonRejection, PathRejection, QueryRejection};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
@@ -58,6 +58,8 @@ pub enum ApiError {
     BizCodeWithArgs(ErrorCode, Vec<String>),
     #[error("错误: {0}")]
     Internal(#[from] anyhow::Error),
+    #[error("{0}")]
+    SerdeJson(#[from] serde_json::Error),
 }
 
 impl From<ValidRejection<ApiError>> for ApiError {
@@ -77,9 +79,10 @@ impl ApiError {
             ApiError::Biz(_) | ApiError::BizCode(_) | ApiError::BizCodeWithArgs(_, _) => {
                 StatusCode::OK
             }
-            ApiError::Internal(_) | ApiError::Database(_) | ApiError::Bcrypt(_) => {
-                StatusCode::INTERNAL_SERVER_ERROR
-            }
+            ApiError::Internal(_)
+            | ApiError::Database(_)
+            | ApiError::Bcrypt(_)
+            | ApiError::SerdeJson(_) => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::Query(_)
             | ApiError::Path(_)
             | ApiError::Json(_)

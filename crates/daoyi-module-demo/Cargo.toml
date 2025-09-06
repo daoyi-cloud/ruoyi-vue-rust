@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+daoyi-common-support.workspace = true
 daoyi-common.workspace = true
 anyhow.workspace = true
 axum.workspace = true

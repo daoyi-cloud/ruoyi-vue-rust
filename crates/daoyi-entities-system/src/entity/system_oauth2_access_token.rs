@@ -15,7 +15,7 @@ pub struct Model {
     pub access_token: String,
     pub refresh_token: String,
     pub client_id: String,
-    pub scopes: Option<String>,
+    pub scopes: Vec<String>,
     pub expires_time: DateTime,
     pub creator: Option<String>,
     pub create_time: DateTime,

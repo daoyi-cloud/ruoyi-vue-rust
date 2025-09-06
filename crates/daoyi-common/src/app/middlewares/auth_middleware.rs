@@ -1,8 +1,6 @@
 use crate::app::{
     TenantContextHolder,
     auth::{Auth, db_auth::get_default_db_auth, jsonwebtoken_auth::get_default_jwt},
-    enumeration::AuthMethod,
-    errors::error::ApiError,
     utils::path_any_matches,
 };
 use crate::config;
@@ -11,6 +9,7 @@ use axum::{
     http::{Request, Response, header},
     response::IntoResponse,
 };
+use daoyi_common_support::utils::{enumeration, errors::error::ApiError};
 use std::pin::Pin;
 use std::sync::LazyLock;
 use tower_http::auth::{AsyncAuthorizeRequest, AsyncRequireAuthorizationLayer};
@@ -62,11 +61,11 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
                 ApiError::Unauthenticated(String::from("Authorization请求头必须存在"))
             })?;
             let principal = match auth_config.method() {
-                AuthMethod::Jwt => get_default_jwt()
+                enumeration::AuthMethod::Jwt => get_default_jwt()
                     .decode(&token)
                     .await
                     .map_err(|error| ApiError::Internal(error))?,
-                AuthMethod::Db => get_default_db_auth()
+                enumeration::AuthMethod::Db => get_default_db_auth()
                     .decode(&token)
                     .await
                     .map_err(|error| ApiError::Internal(error))?,

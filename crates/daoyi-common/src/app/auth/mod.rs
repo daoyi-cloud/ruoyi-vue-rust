@@ -1,4 +1,4 @@
-use crate::app::enumeration::UserTypeEnum;
+use daoyi_common_support::utils::enumeration::UserTypeEnum;
 use serde::{Deserialize, Serialize};
 
 pub mod db_auth;

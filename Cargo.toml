@@ -6,6 +6,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+daoyi-common-support.workspace = true
 daoyi-common.workspace = true
 tokio.workspace = true
 anyhow.workspace = true
@@ -46,3 +47,4 @@ daoyi-module-infra = { version = "0.1.0", path = "crates/daoyi-module-infra" }
 daoyi-module-system = { version = "0.1.0", path = "crates/daoyi-module-system" }
 daoyi-entities-infra = { version = "0.1.0", path = "crates/daoyi-entities-infra" }
 daoyi-entities-system = { version = "0.1.0", path = "crates/daoyi-entities-system" }
+daoyi-common-support = { version = "0.1.0", path = "crates/daoyi-common-support" }

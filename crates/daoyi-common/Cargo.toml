@@ -29,3 +29,4 @@ deadpool-redis.workspace = true
 chrono.workspace = true
 serde_json.workspace = true
 daoyi-entities-system.workspace = true
+daoyi-common-support.workspace = true

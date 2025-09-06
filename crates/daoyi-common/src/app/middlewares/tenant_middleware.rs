@@ -1,17 +1,15 @@
-use crate::app::enumeration::CommonStatusEnum;
-use crate::app::errors::TENANT_EXPIRE;
 use crate::app::utils::is_expired;
-use crate::app::{
-    TenantContextHolder, app_redis, database,
-    errors::{
-        TENANT_DISABLE, TENANT_NOT_EXISTS,
-        error::{ApiError, ApiResult},
-    },
-    utils::path_any_matches,
-};
+use crate::app::{TenantContextHolder, database, redis_util, utils::path_any_matches};
 use crate::config;
 use axum::body::Body;
 use axum::http::{Request, Response};
+use daoyi_common_support::utils::{
+    enumeration,
+    errors::{
+        TENANT_DISABLE, TENANT_EXPIRE, TENANT_NOT_EXISTS,
+        error::{ApiError, ApiResult},
+    },
+};
 use daoyi_entities_system::entity::prelude::SystemTenant;
 use sea_orm::prelude::*;
 use std::pin::Pin;
@@ -86,7 +84,7 @@ impl AsyncAuthorizeRequest<Body> for TenantAuth {
 
 async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
     let cache_key = &format!("valid_tenant:{}", tenant_id);
-    if let Some(t) = app_redis::cache_get::<bool>(cache_key).await? {
+    if let Some(t) = redis_util::cache_get::<bool>(cache_key).await? {
         if t {
             return Ok(());
         }
@@ -97,13 +95,13 @@ async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
         return Err(ApiError::BizCode(TENANT_NOT_EXISTS));
     }
     let tenant = tenant.unwrap();
-    if CommonStatusEnum::is_disable(tenant.status as i32) {
+    if enumeration::CommonStatusEnum::is_disable(tenant.status as i32) {
         return Err(ApiError::BizCode(TENANT_DISABLE));
     }
     if is_expired(tenant.expire_time)? {
         return Err(ApiError::BizCodeWithArgs(TENANT_EXPIRE, vec![tenant.name]));
     }
-    app_redis::cache_set(cache_key, true).await?;
+    redis_util::cache_set(cache_key, true).await?;
     Ok(())
 }
 
