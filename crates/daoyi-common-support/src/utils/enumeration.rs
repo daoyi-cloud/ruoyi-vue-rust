@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
+pub const EMPTY_VEC_STR: &'static str = "[]";
+
 /// 可生成 T 数组的 trait
 pub trait ArrayValuable<T> {
     /// 返回数组

@@ -7,11 +7,11 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "infra_api_error_log")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub trace_id: String,
     pub user_id: i64,
-    pub user_type: i16,
+    pub user_type: i32,
     pub application_name: String,
     pub request_method: String,
     pub request_url: String,
@@ -30,14 +30,14 @@ pub struct Model {
     pub exception_file_name: String,
     pub exception_method_name: String,
     pub exception_line_number: i32,
-    pub process_status: i16,
+    pub process_status: i32,
     pub process_time: Option<DateTime>,
     pub process_user_id: Option<i32>,
     pub creator: Option<String>,
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
     pub tenant_id: i64,
 }
 

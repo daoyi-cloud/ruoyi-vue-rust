@@ -7,10 +7,10 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_mail_log")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub user_id: Option<i64>,
-    pub user_type: Option<i16>,
+    pub user_type: Option<i32>,
     pub to_mail: String,
     pub account_id: i64,
     pub from_mail: String,
@@ -20,7 +20,7 @@ pub struct Model {
     pub template_title: String,
     pub template_content: String,
     pub template_params: String,
-    pub send_status: i16,
+    pub send_status: i32,
     pub send_time: Option<DateTime>,
     pub send_message_id: Option<String>,
     pub send_exception: Option<String>,
@@ -28,7 +28,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

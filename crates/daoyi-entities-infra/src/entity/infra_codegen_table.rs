@@ -7,10 +7,10 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "infra_codegen_table")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub data_source_config_id: i64,
-    pub scene: i16,
+    pub scene: i32,
     pub table_name: String,
     pub table_comment: String,
     pub remark: Option<String>,
@@ -19,8 +19,8 @@ pub struct Model {
     pub class_name: String,
     pub class_comment: String,
     pub author: String,
-    pub template_type: i16,
-    pub front_type: i16,
+    pub template_type: i32,
+    pub front_type: i32,
     pub parent_menu_id: Option<i64>,
     pub master_table_id: Option<i64>,
     pub sub_join_column_id: Option<i64>,
@@ -31,7 +31,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

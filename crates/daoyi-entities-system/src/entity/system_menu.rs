@@ -7,18 +7,18 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_menu")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub name: String,
     pub permission: String,
-    pub r#type: i16,
+    pub r#type: i32,
     pub sort: i32,
     pub parent_id: i64,
     pub path: Option<String>,
     pub icon: Option<String>,
     pub component: Option<String>,
     pub component_name: Option<String>,
-    pub status: i16,
+    pub status: i32,
     pub visible: bool,
     pub keep_alive: bool,
     pub always_show: bool,
@@ -26,7 +26,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -7,11 +7,11 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "infra_api_access_log")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub trace_id: String,
     pub user_id: i64,
-    pub user_type: i16,
+    pub user_type: i32,
     pub application_name: String,
     pub request_method: String,
     pub request_url: String,
@@ -23,7 +23,7 @@ pub struct Model {
     pub user_agent: String,
     pub operate_module: Option<String>,
     pub operate_name: Option<String>,
-    pub operate_type: Option<i16>,
+    pub operate_type: Option<i32>,
     pub begin_time: DateTime,
     pub end_time: DateTime,
     pub duration: i32,
@@ -33,7 +33,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
     pub tenant_id: i64,
 }
 

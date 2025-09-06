@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_user_role")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub user_id: i64,
     pub role_id: i64,
@@ -15,7 +15,7 @@ pub struct Model {
     pub create_time: Option<DateTime>,
     pub updater: Option<String>,
     pub update_time: Option<DateTime>,
-    pub deleted: i16,
+    pub deleted: i32,
     pub tenant_id: i64,
 }
 

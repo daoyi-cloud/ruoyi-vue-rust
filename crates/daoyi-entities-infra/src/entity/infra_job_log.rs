@@ -7,22 +7,22 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "infra_job_log")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub job_id: i64,
     pub handler_name: String,
     pub handler_param: Option<String>,
-    pub execute_index: i16,
+    pub execute_index: i32,
     pub begin_time: DateTime,
     pub end_time: Option<DateTime>,
     pub duration: Option<i32>,
-    pub status: i16,
+    pub status: i32,
     pub result: Option<String>,
     pub creator: Option<String>,
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

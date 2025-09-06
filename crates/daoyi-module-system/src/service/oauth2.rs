@@ -4,7 +4,7 @@ use daoyi_common::app::{TenantContextHolder, database, redis_util};
 use daoyi_common::security::login_user::LoginUser;
 use daoyi_common_support::utils;
 use daoyi_common_support::utils::enumeration::{
-    CommonStatusEnum, UserTypeEnum, redis_key_constants::OAUTH_CLIENT,
+    CommonStatusEnum, EMPTY_VEC_STR, UserTypeEnum, redis_key_constants::OAUTH_CLIENT,
     redis_key_constants::OAUTH2_ACCESS_TOKEN,
 };
 use daoyi_common_support::utils::errors::{
@@ -66,7 +66,9 @@ impl OAuth2TokenService {
             scopes: Set(refresh_token.scopes.to_owned()),
             refresh_token: Set(refresh_token.refresh_token.to_owned()),
             expires_time: Set(Local::now()
-                .add(Duration::from_secs(client.access_token_validity_seconds))
+                .add(Duration::from_secs(
+                    client.access_token_validity_seconds as u64,
+                ))
                 .naive_local()),
             tenant_id: Set(self.tenant_id()),
             ..Default::default()
@@ -76,7 +78,7 @@ impl OAuth2TokenService {
             redis_util::cache_set_json_ex(
                 &format!("{OAUTH2_ACCESS_TOKEN}:{}", model.access_token),
                 &model,
-                client.access_token_validity_seconds,
+                client.access_token_validity_seconds as u64,
             )
             .await?;
         }
@@ -95,9 +97,11 @@ impl OAuth2TokenService {
             user_id: Set(user_id),
             user_type: Set(user_type),
             client_id: Set(client.client_id.to_owned()),
-            scopes: Set(scopes),
+            scopes: Set(Some(serde_json::to_string(&scopes)?)),
             expires_time: Set(Local::now()
-                .add(Duration::from_secs(client.refresh_token_validity_seconds))
+                .add(Duration::from_secs(
+                    client.refresh_token_validity_seconds as u64,
+                ))
                 .naive_local()),
             ..Default::default()
         };
@@ -183,7 +187,7 @@ impl OAuth2ClientService {
         client_id: &str,
         client_secret: &str,
         authorized_grant_type: &str,
-        scopes: Vec<String>,
+        scopes: Vec<&str>,
         redirect_uri: &str,
     ) -> ApiResult<system_oauth2_client::Model> {
         // 校验客户端存在、且开启
@@ -199,23 +203,33 @@ impl OAuth2ClientService {
             return Err(ApiError::BizCode(OAUTH2_CLIENT_CLIENT_SECRET_ERROR));
         }
         // 校验授权方式
-        if !authorized_grant_type.is_empty()
-            && !client
+        let client_agt = serde_json::from_str::<Vec<&str>>(
+            client
                 .authorized_grant_types
-                .contains(&authorized_grant_type)
-        {
+                .as_deref()
+                .unwrap_or_else(|| EMPTY_VEC_STR),
+        )?;
+        if !authorized_grant_type.is_empty() && !client_agt.contains(&authorized_grant_type) {
             return Err(ApiError::BizCode(
                 OAUTH2_CLIENT_AUTHORIZED_GRANT_TYPE_NOT_EXISTS,
             ));
         }
         // 校验授权范围
-        if !scopes.is_empty() && !scopes.iter().all(|scope| client.scopes.contains(scope)) {
+        let client_scopes = serde_json::from_str::<Vec<&str>>(
+            client.scopes.as_deref().unwrap_or_else(|| EMPTY_VEC_STR),
+        )?;
+        if !scopes.is_empty() && !scopes.iter().all(|scope| client_scopes.contains(scope)) {
             return Err(ApiError::BizCode(OAUTH2_CLIENT_SCOPE_OVER));
         }
         // 校验回调地址
-        if !redirect_uri.is_empty()
-            && !client
+        let client_redirect_uris = serde_json::from_str::<Vec<&str>>(
+            client
                 .redirect_uris
+                .as_deref()
+                .unwrap_or_else(|| EMPTY_VEC_STR),
+        )?;
+        if !redirect_uri.is_empty()
+            && !client_redirect_uris
                 .iter()
                 .any(|uri| redirect_uri.starts_with(uri))
         {

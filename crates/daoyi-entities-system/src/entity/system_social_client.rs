@@ -7,20 +7,20 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_social_client")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub name: String,
-    pub social_type: i16,
-    pub user_type: i16,
+    pub social_type: i32,
+    pub user_type: i32,
     pub client_id: String,
     pub client_secret: String,
     pub agent_id: Option<String>,
-    pub status: i16,
+    pub status: i32,
     pub creator: Option<String>,
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
     pub tenant_id: i64,
 }
 

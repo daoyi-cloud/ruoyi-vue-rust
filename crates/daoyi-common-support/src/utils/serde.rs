@@ -41,3 +41,21 @@ where
     let json_string = String::deserialize(deserializer)?;
     serde_json::from_str(&json_string).map_err(serde::de::Error::custom)
 }
+
+// 序列化 Vec<String> 为 JSON 字符串
+pub fn serialize_vec_string<S>(vec: &Vec<String>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let json_string = serde_json::to_string(vec).map_err(serde::ser::Error::custom)?;
+    serializer.serialize_str(&json_string)
+}
+
+// 反序列化 JSON 字符串为 Vec<String>
+pub fn deserialize_vec_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let json_string = String::deserialize(deserializer)?;
+    serde_json::from_str(&json_string).map_err(serde::de::Error::custom)
+}

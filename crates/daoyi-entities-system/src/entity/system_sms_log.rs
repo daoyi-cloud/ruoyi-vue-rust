@@ -7,26 +7,26 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_sms_log")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub channel_id: i64,
     pub channel_code: String,
     pub template_id: i64,
     pub template_code: String,
-    pub template_type: i16,
+    pub template_type: i32,
     pub template_content: String,
     pub template_params: String,
     pub api_template_id: String,
     pub mobile: String,
     pub user_id: Option<i64>,
-    pub user_type: Option<i16>,
-    pub send_status: i16,
+    pub user_type: Option<i32>,
+    pub send_status: i32,
     pub send_time: Option<DateTime>,
     pub api_send_code: Option<String>,
     pub api_send_msg: Option<String>,
     pub api_request_id: Option<String>,
     pub api_serial_no: Option<String>,
-    pub receive_status: i16,
+    pub receive_status: i32,
     pub receive_time: Option<DateTime>,
     pub api_receive_code: Option<String>,
     pub api_receive_msg: Option<String>,
@@ -34,7 +34,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

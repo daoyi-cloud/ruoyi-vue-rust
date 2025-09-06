@@ -7,13 +7,13 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(schema_name = "dev", table_name = "system_dict_data")]
 #[serde(rename_all = "camelCase")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(primary_key, auto_increment = true)]
     pub id: i64,
     pub sort: i32,
     pub label: String,
     pub value: String,
     pub dict_type: String,
-    pub status: i16,
+    pub status: i32,
     pub color_type: Option<String>,
     pub css_class: Option<String>,
     pub remark: Option<String>,
@@ -21,7 +21,7 @@ pub struct Model {
     pub create_time: DateTime,
     pub updater: Option<String>,
     pub update_time: DateTime,
-    pub deleted: i16,
+    pub deleted: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
