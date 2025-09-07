@@ -100,7 +100,7 @@ ALTER TABLE infra_api_access_log
     ALTER COLUMN id SET DEFAULT nextval('infra_api_access_log_seq');
 
 -- 设置序列由表拥有
-ALTER SEQUENCE infra_api_access_log
+ALTER SEQUENCE infra_api_access_log_seq
     OWNED BY infra_api_access_log.id;
 
 -- ----------------------------
@@ -383,6 +383,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS infra_config_seq;
 CREATE SEQUENCE infra_config_seq
     START 14;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_api_access_log
+    ALTER COLUMN id SET DEFAULT nextval('infra_config_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_config_seq
+    OWNED BY infra_config.id;
 
 -- ----------------------------
 -- Table structure for infra_data_source_config
@@ -420,6 +427,13 @@ COMMENT ON TABLE infra_data_source_config IS '数据源配置表';
 DROP SEQUENCE IF EXISTS infra_data_source_config_seq;
 CREATE SEQUENCE infra_data_source_config_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_data_source_config
+    ALTER COLUMN id SET DEFAULT nextval('infra_data_source_config_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_data_source_config_seq
+    OWNED BY infra_data_source_config.id;
 
 -- ----------------------------
 -- Table structure for infra_file
@@ -461,6 +475,13 @@ COMMENT ON TABLE infra_file IS '文件表';
 DROP SEQUENCE IF EXISTS infra_file_seq;
 CREATE SEQUENCE infra_file_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_file
+    ALTER COLUMN id SET DEFAULT nextval('infra_file_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_file_seq
+    OWNED BY infra_file.id;
 
 -- ----------------------------
 -- Table structure for infra_file_config
@@ -517,6 +538,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS infra_file_config_seq;
 CREATE SEQUENCE infra_file_config_seq
     START 31;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_file_config
+    ALTER COLUMN id SET DEFAULT nextval('infra_file_config_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_file_config_seq
+    OWNED BY infra_file_config.id;
 
 -- ----------------------------
 -- Table structure for infra_file_content
@@ -552,6 +580,13 @@ COMMENT ON TABLE infra_file_content IS '文件表';
 DROP SEQUENCE IF EXISTS infra_file_content_seq;
 CREATE SEQUENCE infra_file_content_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_file_content
+    ALTER COLUMN id SET DEFAULT nextval('infra_file_content_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_file_content_seq
+    OWNED BY infra_file_content.id;
 
 -- ----------------------------
 -- Table structure for infra_job
@@ -618,6 +653,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS infra_job_seq;
 CREATE SEQUENCE infra_job_seq
     START 36;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_job
+    ALTER COLUMN id SET DEFAULT nextval('infra_job_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_job_seq
+    OWNED BY infra_job.id;
 
 -- ----------------------------
 -- Table structure for infra_job_log
@@ -665,6 +707,13 @@ COMMENT ON TABLE infra_job_log IS '定时任务日志表';
 DROP SEQUENCE IF EXISTS infra_job_log_seq;
 CREATE SEQUENCE infra_job_log_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE infra_job_log
+    ALTER COLUMN id SET DEFAULT nextval('infra_job_log_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE infra_job_log_seq
+    OWNED BY infra_job_log.id;
 
 -- ----------------------------
 -- Table structure for system_dept
@@ -732,6 +781,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_dept_seq;
 CREATE SEQUENCE system_dept_seq
     START 114;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_dept
+    ALTER COLUMN id SET DEFAULT nextval('system_dept_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_dept_seq
+    OWNED BY system_dept.id;
 
 -- ----------------------------
 -- Table structure for system_dict_data
@@ -1388,6 +1444,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_dict_data_seq;
 CREATE SEQUENCE system_dict_data_seq
     START 3003;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_dict_data
+    ALTER COLUMN id SET DEFAULT nextval('system_dict_data_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_dict_data_seq
+    OWNED BY system_dict_data.id;
 
 -- ----------------------------
 -- Table structure for system_dict_type
@@ -1542,6 +1605,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_dict_type_seq;
 CREATE SEQUENCE system_dict_type_seq
     START 1014;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_dict_type
+    ALTER COLUMN id SET DEFAULT nextval('system_dict_type_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_dict_type_seq
+    OWNED BY system_dict_type.id;
 
 -- ----------------------------
 -- Table structure for system_login_log
@@ -1589,6 +1659,13 @@ COMMENT ON TABLE system_login_log IS '系统访问记录';
 DROP SEQUENCE IF EXISTS system_login_log_seq;
 CREATE SEQUENCE system_login_log_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_login_log
+    ALTER COLUMN id SET DEFAULT nextval('system_login_log_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_login_log_seq
+    OWNED BY system_login_log.id;
 
 -- ----------------------------
 -- Table structure for system_mail_account
@@ -1644,6 +1721,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_mail_account_seq;
 CREATE SEQUENCE system_mail_account_seq
     START 5;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_mail_account
+    ALTER COLUMN id SET DEFAULT nextval('system_mail_account_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_mail_account_seq
+    OWNED BY system_mail_account.id;
 
 -- ----------------------------
 -- Table structure for system_mail_log
@@ -1703,6 +1787,13 @@ COMMENT ON TABLE system_mail_log IS '邮件日志表';
 DROP SEQUENCE IF EXISTS system_mail_log_seq;
 CREATE SEQUENCE system_mail_log_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_mail_log
+    ALTER COLUMN id SET DEFAULT nextval('system_mail_log_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_mail_log_seq
+    OWNED BY system_mail_log.id;
 
 -- ----------------------------
 -- Table structure for system_mail_template
@@ -1761,6 +1852,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_mail_template_seq;
 CREATE SEQUENCE system_mail_template_seq
     START 16;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_mail_template
+    ALTER COLUMN id SET DEFAULT nextval('system_mail_template_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_mail_template_seq
+    OWNED BY system_mail_template.id;
 
 -- ----------------------------
 -- Table structure for system_menu
@@ -2735,6 +2833,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_menu_seq;
 CREATE SEQUENCE system_menu_seq
     START 5013;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_menu
+    ALTER COLUMN id SET DEFAULT nextval('system_menu_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_menu_seq
+    OWNED BY system_menu.id;
 
 -- ----------------------------
 -- Table structure for system_notice
@@ -2785,6 +2890,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_notice_seq;
 CREATE SEQUENCE system_notice_seq
     START 5;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_notice
+    ALTER COLUMN id SET DEFAULT nextval('system_notice_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_notice_seq
+    OWNED BY system_notice.id;
 
 -- ----------------------------
 -- Table structure for system_notify_message
@@ -2853,6 +2965,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_notify_message_seq;
 CREATE SEQUENCE system_notify_message_seq
     START 11;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_notify_message
+    ALTER COLUMN id SET DEFAULT nextval('system_notify_message_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_notify_message_seq
+    OWNED BY system_notify_message.id;
 
 -- ----------------------------
 -- Table structure for system_notify_template
@@ -2898,6 +3017,13 @@ COMMENT ON TABLE system_notify_template IS '站内信模板表';
 DROP SEQUENCE IF EXISTS system_notify_template_seq;
 CREATE SEQUENCE system_notify_template_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_notify_template
+    ALTER COLUMN id SET DEFAULT nextval('system_notify_template_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_notify_template_seq
+    OWNED BY system_notify_template.id;
 
 -- ----------------------------
 -- Table structure for system_oauth2_access_token
@@ -2948,7 +3074,6 @@ COMMENT ON TABLE system_oauth2_access_token IS 'OAuth2 访问令牌';
 DROP SEQUENCE IF EXISTS system_oauth2_access_token_seq;
 CREATE SEQUENCE system_oauth2_access_token_seq
     START 1;
-
 -- 将序列与表的 id 字段关联
 ALTER TABLE system_oauth2_access_token
     ALTER COLUMN id SET DEFAULT nextval('system_oauth2_access_token_seq');
@@ -2956,6 +3081,7 @@ ALTER TABLE system_oauth2_access_token
 -- 设置序列由表拥有
 ALTER SEQUENCE system_oauth2_access_token_seq
     OWNED BY system_oauth2_access_token.id;
+
 -- ----------------------------
 -- Table structure for system_oauth2_approve
 -- ----------------------------
@@ -2998,6 +3124,13 @@ COMMENT ON TABLE system_oauth2_approve IS 'OAuth2 批准表';
 DROP SEQUENCE IF EXISTS system_oauth2_approve_seq;
 CREATE SEQUENCE system_oauth2_approve_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_oauth2_approve
+    ALTER COLUMN id SET DEFAULT nextval('system_oauth2_approve_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_oauth2_approve_seq
+    OWNED BY system_oauth2_approve.id;
 
 -- ----------------------------
 -- Table structure for system_oauth2_client
@@ -3069,6 +3202,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_oauth2_client_seq;
 CREATE SEQUENCE system_oauth2_client_seq
     START 43;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_oauth2_client
+    ALTER COLUMN id SET DEFAULT nextval('system_oauth2_client_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_oauth2_client_seq
+    OWNED BY system_oauth2_client.id;
 
 -- ----------------------------
 -- Table structure for system_oauth2_code
@@ -3116,6 +3256,13 @@ COMMENT ON TABLE system_oauth2_code IS 'OAuth2 授权码表';
 DROP SEQUENCE IF EXISTS system_oauth2_code_seq;
 CREATE SEQUENCE system_oauth2_code_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_oauth2_code
+    ALTER COLUMN id SET DEFAULT nextval('system_oauth2_code_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_oauth2_code_seq
+    OWNED BY system_oauth2_code.id;
 
 -- ----------------------------
 -- Table structure for system_oauth2_refresh_token
@@ -3223,6 +3370,13 @@ COMMENT ON TABLE system_operate_log IS '操作日志记录 V2 版本';
 DROP SEQUENCE IF EXISTS system_operate_log_seq;
 CREATE SEQUENCE system_operate_log_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_operate_log
+    ALTER COLUMN id SET DEFAULT nextval('system_operate_log_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_operate_log_seq
+    OWNED BY system_operate_log.id;
 
 -- ----------------------------
 -- Table structure for system_post
@@ -3276,6 +3430,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_post_seq;
 CREATE SEQUENCE system_post_seq
     START 6;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_post
+    ALTER COLUMN id SET DEFAULT nextval('system_post_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_post_seq
+    OWNED BY system_post.id;
 
 -- ----------------------------
 -- Table structure for system_role
@@ -3339,6 +3500,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_role_seq;
 CREATE SEQUENCE system_role_seq
     START 159;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_role
+    ALTER COLUMN id SET DEFAULT nextval('system_role_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_role_seq
+    OWNED BY system_role.id;
 
 -- ----------------------------
 -- Table structure for system_role_menu
@@ -4245,6 +4413,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_role_menu_seq;
 CREATE SEQUENCE system_role_menu_seq
     START 6139;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_role_menu
+    ALTER COLUMN id SET DEFAULT nextval('system_role_menu_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_role_menu_seq
+    OWNED BY system_role_menu.id;
 
 -- ----------------------------
 -- Table structure for system_sms_channel
@@ -4299,6 +4474,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_sms_channel_seq;
 CREATE SEQUENCE system_sms_channel_seq
     START 8;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_sms_channel
+    ALTER COLUMN id SET DEFAULT nextval('system_sms_channel_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_sms_channel_seq
+    OWNED BY system_sms_channel.id;
 
 -- ----------------------------
 -- Table structure for system_sms_code
@@ -4348,6 +4530,13 @@ COMMENT ON TABLE system_sms_code IS '手机验证码';
 DROP SEQUENCE IF EXISTS system_sms_code_seq;
 CREATE SEQUENCE system_sms_code_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_sms_code
+    ALTER COLUMN id SET DEFAULT nextval('system_sms_code_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_sms_code_seq
+    OWNED BY system_sms_code.id;
 
 -- ----------------------------
 -- Table structure for system_sms_log
@@ -4419,6 +4608,13 @@ COMMENT ON TABLE system_sms_log IS '短信日志';
 DROP SEQUENCE IF EXISTS system_sms_log_seq;
 CREATE SEQUENCE system_sms_log_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_sms_log
+    ALTER COLUMN id SET DEFAULT nextval('system_sms_log_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_sms_log_seq
+    OWNED BY system_sms_log.id;
 
 -- ----------------------------
 -- Table structure for system_sms_template
@@ -4491,6 +4687,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_sms_template_seq;
 CREATE SEQUENCE system_sms_template_seq
     START 20;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_sms_template
+    ALTER COLUMN id SET DEFAULT nextval('system_sms_template_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_sms_template_seq
+    OWNED BY system_sms_template.id;
 
 -- ----------------------------
 -- Table structure for system_social_client
@@ -4549,6 +4752,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_social_client_seq;
 CREATE SEQUENCE system_social_client_seq
     START 45;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_social_client
+    ALTER COLUMN id SET DEFAULT nextval('system_social_client_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_social_client_seq
+    OWNED BY system_social_client.id;
 
 -- ----------------------------
 -- Table structure for system_social_user
@@ -4598,6 +4808,13 @@ COMMENT ON TABLE system_social_user IS '社交用户表';
 DROP SEQUENCE IF EXISTS system_social_user_seq;
 CREATE SEQUENCE system_social_user_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_social_user
+    ALTER COLUMN id SET DEFAULT nextval('system_social_user_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_social_user_seq
+    OWNED BY system_social_user.id;
 
 -- ----------------------------
 -- Table structure for system_social_user_bind
@@ -4637,6 +4854,13 @@ COMMENT ON TABLE system_social_user_bind IS '社交绑定表';
 DROP SEQUENCE IF EXISTS system_social_user_bind_seq;
 CREATE SEQUENCE system_social_user_bind_seq
     START 1;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_social_user_bind
+    ALTER COLUMN id SET DEFAULT nextval('system_social_user_bind_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_social_user_bind_seq
+    OWNED BY system_social_user_bind.id;
 
 -- ----------------------------
 -- Table structure for system_tenant
@@ -4695,6 +4919,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_tenant_seq;
 CREATE SEQUENCE system_tenant_seq
     START 123;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_tenant
+    ALTER COLUMN id SET DEFAULT nextval('system_tenant_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_tenant_seq
+    OWNED BY system_tenant.id;
 
 -- ----------------------------
 -- Table structure for system_tenant_package
@@ -4742,6 +4973,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_tenant_package_seq;
 CREATE SEQUENCE system_tenant_package_seq
     START 113;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_tenant_package
+    ALTER COLUMN id SET DEFAULT nextval('system_tenant_package_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_tenant_package_seq
+    OWNED BY system_tenant_package.id;
 
 -- ----------------------------
 -- Table structure for system_user_post
@@ -4794,6 +5032,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_user_post_seq;
 CREATE SEQUENCE system_user_post_seq
     START 126;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_user_post
+    ALTER COLUMN id SET DEFAULT nextval('system_user_post_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_user_post_seq
+    OWNED BY system_user_post.id;
 
 -- ----------------------------
 -- Table structure for system_user_role
@@ -4854,6 +5099,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_user_role_seq;
 CREATE SEQUENCE system_user_role_seq
     START 49;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_user_role
+    ALTER COLUMN id SET DEFAULT nextval('system_user_role_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_user_role_seq
+    OWNED BY system_user_role.id;
 
 -- ----------------------------
 -- Table structure for system_users
@@ -4937,6 +5189,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS system_users_seq;
 CREATE SEQUENCE system_users_seq
     START 142;
+-- 将序列与表的 id 字段关联
+ALTER TABLE system_users
+    ALTER COLUMN id SET DEFAULT nextval('system_users_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE system_users_seq
+    OWNED BY system_users.id;
 
 -- ----------------------------
 -- Table structure for yudao_demo01_contact
@@ -4987,6 +5246,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS yudao_demo01_contact_seq;
 CREATE SEQUENCE yudao_demo01_contact_seq
     START 2;
+-- 将序列与表的 id 字段关联
+ALTER TABLE yudao_demo01_contact
+    ALTER COLUMN id SET DEFAULT nextval('yudao_demo01_contact_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE yudao_demo01_contact_seq
+    OWNED BY yudao_demo01_contact.id;
 
 -- ----------------------------
 -- Table structure for yudao_demo02_category
@@ -5036,6 +5302,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS yudao_demo02_category_seq;
 CREATE SEQUENCE yudao_demo02_category_seq
     START 7;
+-- 将序列与表的 id 字段关联
+ALTER TABLE yudao_demo02_category
+    ALTER COLUMN id SET DEFAULT nextval('yudao_demo02_category_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE yudao_demo02_category_seq
+    OWNED BY yudao_demo02_category.id;
 
 -- ----------------------------
 -- Table structure for yudao_demo03_course
@@ -5098,6 +5371,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS yudao_demo03_course_seq;
 CREATE SEQUENCE yudao_demo03_course_seq
     START 21;
+-- 将序列与表的 id 字段关联
+ALTER TABLE yudao_demo03_course
+    ALTER COLUMN id SET DEFAULT nextval('yudao_demo03_course_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE yudao_demo03_course_seq
+    OWNED BY yudao_demo03_course.id;
 
 -- ----------------------------
 -- Table structure for yudao_demo03_grade
@@ -5146,6 +5426,13 @@ COMMIT;
 DROP SEQUENCE IF EXISTS yudao_demo03_grade_seq;
 CREATE SEQUENCE yudao_demo03_grade_seq
     START 10;
+-- 将序列与表的 id 字段关联
+ALTER TABLE yudao_demo03_grade
+    ALTER COLUMN id SET DEFAULT nextval('yudao_demo03_grade_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE yudao_demo03_grade_seq
+    OWNED BY yudao_demo03_grade.id;
 
 -- ----------------------------
 -- Table structure for yudao_demo03_student
@@ -5196,4 +5483,11 @@ COMMIT;
 DROP SEQUENCE IF EXISTS yudao_demo03_student_seq;
 CREATE SEQUENCE yudao_demo03_student_seq
     START 10;
+-- 将序列与表的 id 字段关联
+ALTER TABLE yudao_demo03_student
+    ALTER COLUMN id SET DEFAULT nextval('yudao_demo03_student_seq');
+
+-- 设置序列由表拥有
+ALTER SEQUENCE yudao_demo03_student_seq
+    OWNED BY yudao_demo03_student.id;
 
