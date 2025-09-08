@@ -2,7 +2,10 @@ use crate::app::{
     AppState,
     auth::Principal,
     latency::LatencyOnResponse,
-    middlewares::{auth_middleware::get_auth_layer, tenant_middleware::get_tenant_layer},
+    middlewares::{
+        auth_middleware::get_auth_layer, permission_middleware::get_permission_layer,
+        tenant_middleware::get_tenant_layer,
+    },
 };
 use crate::config::ServerConfig;
 use axum::{
@@ -88,6 +91,7 @@ impl Server {
             .layer(timeout)
             .layer(body_limit)
             .layer(trace)
+            .route_layer(get_permission_layer())
             .route_layer(get_auth_layer())
             .route_layer(get_tenant_layer())
             .layer(cors)

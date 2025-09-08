@@ -54,7 +54,7 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
                     Ok(token)
                 })
                 .transpose()?;
-            if token.is_none() && path_any_matches(&ignore_urls, &request.uri().path())? {
+            if token.is_none() && path_any_matches(&ignore_urls, request.uri().path())? {
                 return Ok(request);
             }
             let token = token.ok_or_else(|| {

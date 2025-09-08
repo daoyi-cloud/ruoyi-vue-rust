@@ -333,6 +333,9 @@ pub mod redis_key_constants {
     /// VALUE 数据类型：String 菜单编号数组
     pub const PERMISSION_MENU_ID_LIST: &'static str = "permission_menu_ids";
 
+    /// 用户拥有的权限缓存
+    pub const USER_HAS_PERMISSION: &'static str = "user_has_permission";
+
     /// OAuth2 客户端的缓存
     ///
     /// KEY 格式：oauth_client:{id}
@@ -420,5 +423,34 @@ impl LoginResultEnum {
             LoginResultEnum::CaptchaNotFound,
             LoginResultEnum::CaptchaCodeError,
         ]
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum RoleCode {
+    SuperAdmin,
+    TenantAdmin,
+    CrmAdmin,
+}
+
+impl RoleCode {
+    pub fn code(&self) -> &'static str {
+        match self {
+            RoleCode::SuperAdmin => "super_admin",
+            RoleCode::TenantAdmin => "tenant_admin",
+            RoleCode::CrmAdmin => "crm_admin",
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            RoleCode::SuperAdmin => "超级管理员",
+            RoleCode::TenantAdmin => "租户管理员",
+            RoleCode::CrmAdmin => "CRM 管理员",
+        }
+    }
+
+    pub fn is_super_admin(code: &str) -> bool {
+        code == "super_admin"
     }
 }

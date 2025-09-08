@@ -64,7 +64,7 @@ impl AsyncAuthorizeRequest<Body> for TenantAuth {
                     Ok(token)
                 })
                 .transpose()?;
-            if tenant_id.is_none() && path_any_matches(&ignore_urls, &request.uri().path())? {
+            if tenant_id.is_none() && path_any_matches(&ignore_urls, request.uri().path())? {
                 request
                     .extensions_mut()
                     .insert(TenantContextHolder::default());
@@ -95,7 +95,7 @@ async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
         return Err(ApiError::BizCode(TENANT_NOT_EXISTS));
     }
     let tenant = tenant.unwrap();
-    if enumeration::CommonStatusEnum::is_disable(tenant.status as i32) {
+    if enumeration::CommonStatusEnum::is_disable(tenant.status) {
         return Err(ApiError::BizCode(TENANT_DISABLE));
     }
     if is_expired(tenant.expire_time)? {
