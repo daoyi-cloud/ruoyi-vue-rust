@@ -18,6 +18,7 @@ pub struct Model {
     pub icon: Option<String>,
     pub component: Option<String>,
     pub component_name: Option<String>,
+    pub perm_apis: Option<String>,
     pub status: i32,
     pub visible: bool,
     pub keep_alive: bool,
