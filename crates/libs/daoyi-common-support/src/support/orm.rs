@@ -66,6 +66,8 @@ where
 #[macro_export]
 macro_rules! impl_common_fields_updater {
     ($entity:ty) => {
+        use daoyi_common_support::support::orm::CommonFieldsUpdater;
+        use sea_orm::ActiveValue;
         impl CommonFieldsUpdater for $entity {
             fn set_created_fields(&mut self, creator: Option<String>) {
                 self.creator = ActiveValue::Set(creator);
@@ -83,6 +85,29 @@ macro_rules! impl_common_fields_updater {
 
             fn set_tenant_id(&mut self, tenant_id: i64) {
                 self.tenant_id = ActiveValue::Set(tenant_id);
+            }
+        }
+    };
+    ($entity:ty, no_tenant) => {
+        use daoyi_common_support::support::orm::CommonFieldsUpdater;
+        use sea_orm::ActiveValue;
+        impl CommonFieldsUpdater for $entity {
+            fn set_created_fields(&mut self, creator: Option<String>) {
+                self.creator = ActiveValue::Set(creator);
+                self.create_time = ActiveValue::Set(chrono::Local::now().naive_local());
+            }
+
+            fn set_updated_fields(&mut self, updater: Option<String>) {
+                self.updater = ActiveValue::Set(updater);
+                self.update_time = ActiveValue::Set(chrono::Local::now().naive_local());
+            }
+
+            fn set_deleted(&mut self, deleted: i32) {
+                self.deleted = ActiveValue::Set(deleted);
+            }
+
+            fn set_tenant_id(&mut self, _tenant_id: i64) {
+                // 忽略tenant_id，因为该实体没有此字段
             }
         }
     };

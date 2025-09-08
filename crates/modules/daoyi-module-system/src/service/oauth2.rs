@@ -73,10 +73,14 @@ impl OAuth2TokenService {
                 .naive_local()),
             ..Default::default()
         };
-        let model = create_with_common_fields(active_model, None, &self.tenant)
-            .await?
-            .insert(database::get()?)
-            .await?;
+        let model = create_with_common_fields(
+            active_model,
+            Some(refresh_token.user_id.to_string()),
+            &self.tenant,
+        )
+        .await?
+        .insert(database::get()?)
+        .await?;
         if client.access_token_validity_seconds > 0 {
             redis_util::cache_set_json_ex(
                 &format!("{OAUTH2_ACCESS_TOKEN}:{}", model.access_token),
@@ -108,7 +112,11 @@ impl OAuth2TokenService {
                 .naive_local()),
             ..Default::default()
         };
-        let model = active_model.insert(database::get()?).await?;
+        let model =
+            create_with_common_fields(active_model, Some(user_id.to_string()), &self.tenant)
+                .await?
+                .insert(database::get()?)
+                .await?;
         Ok(model)
     }
 
