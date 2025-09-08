@@ -7,6 +7,9 @@ pub struct AuthConfig {
     method: enumeration::AuthMethod,
     #[serde(default = "default_ignore_urls")]
     ignore_urls: Vec<String>,
+    /// Token是否自动续期
+    #[serde(default = "default_auto_renew")]
+    auto_renew: bool,
 }
 
 impl Default for AuthConfig {
@@ -14,6 +17,7 @@ impl Default for AuthConfig {
         Self {
             method: default_method(),
             ignore_urls: default_ignore_urls(),
+            auto_renew: default_auto_renew(),
         }
     }
 }
@@ -25,6 +29,9 @@ impl AuthConfig {
     pub fn ignore_urls(&self) -> Vec<String> {
         self.ignore_urls.clone()
     }
+    pub fn auto_renew(&self) -> bool {
+        self.auto_renew
+    }
 }
 fn default_method() -> enumeration::AuthMethod {
     enumeration::AuthMethod::Jwt
@@ -32,4 +39,8 @@ fn default_method() -> enumeration::AuthMethod {
 
 fn default_ignore_urls() -> Vec<String> {
     vec![String::from("/demo/api/auth/login")]
+}
+
+fn default_auto_renew() -> bool {
+    true
 }
