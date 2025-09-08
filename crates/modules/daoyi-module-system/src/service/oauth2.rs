@@ -14,6 +14,7 @@ use daoyi_common_support::utils::errors::{
     OAUTH2_CLIENT_SCOPE_OVER,
     error::{ApiError, ApiResult},
 };
+use daoyi_common_support::utils::is_expired;
 use daoyi_entities_system::entity::prelude::{SystemOauth2AccessToken, SystemOauth2RefreshToken};
 use daoyi_entities_system::entity::{
     prelude::SystemOauth2Client, system_oauth2_access_token, system_oauth2_client,
@@ -35,6 +36,51 @@ pub struct OAuth2ClientService {
 impl_tenant_instance!(OAuth2ClientService);
 
 impl OAuth2TokenService {
+    pub async fn refresh_access_token(
+        &self,
+        refresh_token: String,
+        client_id: &str,
+    ) -> ApiResult<system_oauth2_access_token::Model> {
+        let db = database::get()?;
+        // 查询访问令牌
+        let refresh_token = SystemOauth2RefreshToken::find()
+            .filter(system_oauth2_refresh_token::Column::RefreshToken.eq(refresh_token))
+            .one(db)
+            .await?
+            .ok_or_else(|| ApiError::Validation(String::from("无效的刷新令牌")))?;
+        // 校验 Client 匹配
+        let client = OAuth2ClientService::new(self.tenant.clone())
+            .valid_oauth_client_from_cache(client_id)
+            .await?;
+        // 移除相关的访问令牌
+        let access_tokens = SystemOauth2AccessToken::find()
+            .filter(
+                system_oauth2_access_token::Column::RefreshToken.eq(&refresh_token.refresh_token),
+            )
+            .all(db)
+            .await?;
+        for access_token in access_tokens {
+            redis_util::del(&format!(
+                "{OAUTH2_ACCESS_TOKEN}:{}",
+                access_token.access_token
+            ))
+            .await?;
+            SystemOauth2AccessToken::delete_by_id(access_token.id)
+                .exec(db)
+                .await?;
+        }
+        // 已过期的情况下，删除刷新令牌
+        if is_expired(refresh_token.expires_time)? {
+            SystemOauth2RefreshToken::delete_by_id(refresh_token.id)
+                .exec(db)
+                .await?;
+            return Err(ApiError::Unauthenticated(String::from("刷新令牌已过期")));
+        }
+        // 创建访问令牌
+        self.create_oauth2access_token(&refresh_token, &client)
+            .await
+    }
+
     pub async fn remove_access_token(&self, access_token: &str) -> ApiResult<()> {
         let db = database::get()?;
         let token = SystemOauth2AccessToken::find()

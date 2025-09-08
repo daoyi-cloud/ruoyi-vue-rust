@@ -15,11 +15,20 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
+    pub async fn refresh_token(&self, refresh_token: String) -> ApiResult<AuthLoginRespVo> {
+        let token = OAuth2TokenService::new(self.tenant.clone())
+            .refresh_access_token(refresh_token, oauth2_client_constants::CLIENT_ID_DEFAULT)
+            .await?;
+        // 构建返回结果
+        Ok(token.into())
+    }
+
     pub async fn logout(&self, principal: Principal) -> ApiResult<()> {
         OAuth2TokenService::new(self.tenant.clone())
             .remove_access_token(&principal.token)
             .await
     }
+
     pub async fn login(&self, req_vo: AuthLoginReqVo) -> ApiResult<AuthLoginRespVo> {
         let user = self
             .authenticate(&req_vo.username, &req_vo.password)

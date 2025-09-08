@@ -36,7 +36,7 @@ async fn init() -> anyhow::Result<DatabaseConnection> {
         .acquire_timeout(Duration::from_secs(30))
         .idle_timeout(Duration::from_secs(300))
         .max_lifetime(Duration::from_secs(3600 * 24))
-        .sqlx_logging(false)
+        .sqlx_logging(false) // 启用SQL日志
         .set_schema_search_path(database_config.schema());
     let db = Database::connect(options).await?;
     db.ping().await?;

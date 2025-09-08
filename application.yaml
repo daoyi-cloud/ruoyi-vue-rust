@@ -16,9 +16,12 @@ redis:
 tenant:
   enabled: true
   header_name: tenant-id
+  ignore_urls:
+    - /demo/api/redis/current-test-key
 auth:
   method: db
   ignore_urls:
     - /demo/api/auth/login
     - /demo/api/redis/current-test-key
     - /system/admin-api/auth/login
+    - /system/admin-api/auth/refresh-token

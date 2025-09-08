@@ -1,15 +1,30 @@
 use crate::service::auth::AdminAuthService;
-use crate::vo::auth::{AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo};
+use crate::vo::auth::{
+    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
+};
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
 use daoyi_common_support::utils::errors::error::{ApiJsonResult, api_json_ok};
-use daoyi_common_support::utils::web::valid::ValidJson;
+use daoyi_common_support::utils::web::valid::{ValidJson, ValidQuery};
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
         .route("/get-permission-info", routing::get(get_permission_info))
         .route("/login", routing::post(login))
         .route("/logout", routing::post(logout))
+        .route("/refresh-token", routing::post(refresh_token))
+}
+
+#[debug_handler]
+async fn refresh_token(
+    Extension(tenant): Extension<TenantContextHolder>,
+    ValidQuery(params): ValidQuery<AuthRefreshTokenReqVo>,
+) -> ApiJsonResult<AuthLoginRespVo> {
+    api_json_ok(
+        AdminAuthService::new(tenant)
+            .refresh_token(params.refresh_token)
+            .await?,
+    )
 }
 
 #[debug_handler]
