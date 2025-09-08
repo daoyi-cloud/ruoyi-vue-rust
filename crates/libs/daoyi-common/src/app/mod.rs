@@ -6,12 +6,11 @@ pub mod logger;
 mod middlewares;
 pub mod redis_util;
 pub mod server;
-mod tenant;
 
 use crate::config;
 use axum::Router;
+pub use daoyi_common_support::support::tenant::TenantContextHolder;
 use daoyi_common_support::utils;
-pub use tenant::TenantContextHolder;
 
 #[derive(Clone)]
 pub struct AppState {}

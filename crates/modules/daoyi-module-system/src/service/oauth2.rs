@@ -2,6 +2,7 @@ use crate::impl_tenant_instance;
 use crate::service::user::AdminUserService;
 use daoyi_common::app::{TenantContextHolder, database, redis_util};
 use daoyi_common::security::login_user::LoginUser;
+use daoyi_common_support::support::orm::create_with_common_fields;
 use daoyi_common_support::utils;
 use daoyi_common_support::utils::enumeration::{
     CommonStatusEnum, EMPTY_VEC_STR, UserTypeEnum, redis_key_constants::OAUTH_CLIENT,
@@ -70,10 +71,12 @@ impl OAuth2TokenService {
                     client.access_token_validity_seconds as u64,
                 ))
                 .naive_local()),
-            tenant_id: Set(self.tenant_id()),
             ..Default::default()
         };
-        let model = active_model.insert(database::get()?).await?;
+        let model = create_with_common_fields(active_model, None, &self.tenant)
+            .await?
+            .insert(database::get()?)
+            .await?;
         if client.access_token_validity_seconds > 0 {
             redis_util::cache_set_json_ex(
                 &format!("{OAUTH2_ACCESS_TOKEN}:{}", model.access_token),
