@@ -47,7 +47,7 @@ impl OAuth2TokenService {
             .filter(system_oauth2_refresh_token::Column::RefreshToken.eq(refresh_token))
             .one(db)
             .await?
-            .ok_or_else(|| ApiError::Validation(String::from("无效的刷新令牌")))?;
+            .ok_or_else(|| ApiError::InvalidRefreshToken)?;
         // 校验 Client 匹配
         let client = OAuth2ClientService::new(self.tenant.clone())
             .valid_oauth_client_from_cache(client_id)
