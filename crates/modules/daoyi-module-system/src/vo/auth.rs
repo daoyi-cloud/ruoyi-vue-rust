@@ -1,7 +1,8 @@
 use daoyi_common_support::utils::serde::datetime_format;
-use daoyi_entities_system::entity::system_oauth2_access_token;
+use daoyi_entities_system::entity::{system_menu, system_oauth2_access_token, system_users};
 use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use validator::Validate;
 
 /// AuthLoginReqVO，管理后台 - 账号密码登录 Request VO，如果登录并绑定社交用户，需要传递 social 开头的参数
@@ -62,9 +63,9 @@ pub struct AuthPermissionInfoRespVo {
     /// 菜单树
     pub menus: Vec<MenuVo>,
     /// 操作权限数组
-    pub permissions: Vec<String>,
+    pub permissions: HashSet<String>,
     /// 角色标识数组
-    pub roles: Vec<String>,
+    pub roles: HashSet<String>,
     /// 用户信息
     pub user: UserVo,
 }
@@ -74,7 +75,7 @@ pub struct AuthPermissionInfoRespVo {
 #[serde(rename_all = "camelCase")]
 pub struct MenuVo {
     /// 是否总是显示
-    pub always_show: Option<bool>,
+    pub always_show: bool,
     /// 组件路径,仅菜单类型为菜单时，才需要传
     pub component: Option<String>,
     /// 组件名
@@ -93,6 +94,26 @@ pub struct MenuVo {
     pub path: Option<String>,
     /// 是否可见
     pub visible: bool,
+    /// 子路由
+    pub children: Vec<MenuVo>,
+}
+
+impl From<system_menu::Model> for MenuVo {
+    fn from(value: system_menu::Model) -> Self {
+        Self {
+            always_show: value.always_show,
+            component: value.component,
+            component_name: value.component_name,
+            icon: value.icon,
+            id: value.id,
+            keep_alive: value.keep_alive,
+            name: value.name,
+            parent_id: value.parent_id,
+            path: value.path,
+            visible: value.visible,
+            children: vec![],
+        }
+    }
 }
 
 /// 用户信息
@@ -102,9 +123,9 @@ pub struct MenuVo {
 #[serde(rename_all = "camelCase")]
 pub struct UserVo {
     /// 用户头像
-    pub avatar: String,
+    pub avatar: Option<String>,
     /// 部门编号
-    pub dept_id: i64,
+    pub dept_id: Option<i64>,
     /// 用户邮箱
     pub email: Option<String>,
     /// 用户编号
@@ -113,4 +134,17 @@ pub struct UserVo {
     pub nickname: String,
     /// 用户账号
     pub username: String,
+}
+
+impl From<system_users::Model> for UserVo {
+    fn from(model: system_users::Model) -> Self {
+        Self {
+            avatar: model.avatar,
+            dept_id: model.dept_id,
+            email: model.email,
+            id: model.id,
+            nickname: model.nickname,
+            username: model.username,
+        }
+    }
 }

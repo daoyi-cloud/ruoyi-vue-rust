@@ -9,10 +9,22 @@ use daoyi_common_support::utils::web::valid::{ValidJson, ValidQuery};
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
-        .route("/get-permission-info", routing::get(get_permission_info))
         .route("/login", routing::post(login))
         .route("/logout", routing::post(logout))
         .route("/refresh-token", routing::post(refresh_token))
+        .route("/get-permission-info", routing::get(get_permission_info))
+}
+
+#[debug_handler]
+async fn get_permission_info(
+    Extension(tenant): Extension<TenantContextHolder>,
+    Extension(principal): Extension<Principal>,
+) -> ApiJsonResult<AuthPermissionInfoRespVo> {
+    api_json_ok(
+        AdminAuthService::new(tenant)
+            .get_permission_info(principal)
+            .await?,
+    )
 }
 
 #[debug_handler]
@@ -41,16 +53,4 @@ async fn login(
     ValidJson(params): ValidJson<AuthLoginReqVo>,
 ) -> ApiJsonResult<AuthLoginRespVo> {
     api_json_ok(AdminAuthService::new(tenant).login(params).await?)
-}
-
-#[debug_handler]
-async fn get_permission_info(
-    Extension(tenant): Extension<TenantContextHolder>,
-    Extension(principal): Extension<Principal>,
-) -> ApiJsonResult<AuthPermissionInfoRespVo> {
-    api_json_ok(
-        AdminAuthService::new(tenant)
-            .get_permission_info(principal)
-            .await?,
-    )
 }

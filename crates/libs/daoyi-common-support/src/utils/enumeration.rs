@@ -453,4 +453,27 @@ impl RoleCode {
     pub fn is_super_admin(code: &str) -> bool {
         code == "super_admin"
     }
+
+    pub fn has_super_admin<V: AsRef<str>>(codes: impl IntoIterator<Item = V>) -> bool {
+        codes
+            .into_iter()
+            .any(|code| RoleCode::is_super_admin(code.as_ref()))
+    }
+}
+
+/// 菜单类型枚举类
+///
+/// 对应 Java 中的 cn.iocoder.yudao.module.system.enums.permission.MenuTypeEnum
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MenuType {
+    Dir = 1,    // 目录
+    Menu = 2,   // 菜单
+    Button = 3, // 按钮
+}
+
+impl MenuType {
+    /// 获取菜单类型对应的整数值
+    pub fn get_type(&self) -> i32 {
+        *self as i32
+    }
 }

@@ -1,10 +1,15 @@
 use crate::impl_tenant_instance;
+use crate::service::menu::MenuService;
 use crate::service::oauth2::OAuth2TokenService;
+use crate::service::permission::PermissionService;
+use crate::service::role::RoleService;
 use crate::service::user::AdminUserService;
-use crate::vo::auth::{AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo};
+use crate::vo::auth::{AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, UserVo};
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
-use daoyi_common_support::utils::enumeration::{UserTypeEnum, oauth2_client_constants};
+use daoyi_common_support::utils::enumeration::{
+    CommonStatusEnum, UserTypeEnum, oauth2_client_constants,
+};
 use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 use daoyi_common_support::utils::errors::{AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED};
 use daoyi_common_support::utils::{RANDOM_PASSWORD, enumeration, verify_password};
@@ -86,8 +91,46 @@ impl AdminAuthService {
     }
     pub async fn get_permission_info(
         &self,
-        _principal: Principal,
+        principal: Principal,
     ) -> ApiResult<AuthPermissionInfoRespVo> {
-        Ok(AuthPermissionInfoRespVo::default())
+        let mut vo = AuthPermissionInfoRespVo::default();
+        // 1.1 获得用户信息
+        let user = AdminUserService::new(self.tenant.clone())
+            .get_user(principal.user_id)
+            .await?;
+        vo.user = UserVo::from(user);
+        let permission_service = PermissionService::new(self.tenant.clone());
+        // 1.2 获得角色列表
+        let role_ids = permission_service
+            .get_user_role_id_list_by_user_id(principal.user_id)
+            .await?;
+        if role_ids.is_empty() {
+            return Ok(vo);
+        }
+        let roles = RoleService::new(self.tenant.clone())
+            .get_role_list(role_ids)
+            .await?
+            .into_iter()
+            .filter(|role| CommonStatusEnum::is_enable(role.status))
+            .collect::<Vec<_>>();
+        let role_ids = roles.iter().map(|item| item.id).collect::<Vec<_>>();
+        vo.roles = roles.into_iter().map(|item| item.code).collect();
+        // 1.3 获得菜单列表
+        let menu_ids = permission_service
+            .get_role_menu_list_by_role_id(role_ids, &vo.roles)
+            .await?;
+        let menus = MenuService::new(self.tenant.clone())
+            .get_menu_list(menu_ids)
+            .await?
+            .into_iter()
+            .filter(|item| CommonStatusEnum::is_enable(item.status))
+            .collect::<Vec<_>>();
+        vo.permissions = menus
+            .clone()
+            .into_iter()
+            .map(|item| item.permission)
+            .collect();
+        vo.menus = MenuService::build_tree(menus).await?;
+        Ok(vo)
     }
 }
