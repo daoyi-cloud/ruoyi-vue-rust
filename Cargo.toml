@@ -40,7 +40,7 @@ jsonwebtoken = "9.3.1"
 wax = "0.6.0"
 redis = { version = "0.32.5", features = ["tokio-comp"] }
 deadpool-redis = "0.22.0"
-chrono = "0.4.41"
+chrono = { version = "0.4.41", features = ["serde"] }
 daoyi-common = { version = "0.1.0", path = "crates/libs/daoyi-common" }
 daoyi-module-demo = { version = "0.1.0", path = "crates/modules/daoyi-module-demo" }
 daoyi-module-infra = { version = "0.1.0", path = "crates/modules/daoyi-module-infra" }

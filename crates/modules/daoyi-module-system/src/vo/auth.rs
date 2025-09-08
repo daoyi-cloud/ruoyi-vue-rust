@@ -1,3 +1,4 @@
+use daoyi_common_support::utils::serde::datetime_format;
 use daoyi_entities_system::entity::system_oauth2_access_token;
 use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
@@ -22,12 +23,13 @@ pub struct AuthLoginReqVo {
     pub username: String,
 }
 /// AuthLoginRespVO，管理后台 - 登录 Response VO
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthLoginRespVo {
     /// 访问令牌
     pub access_token: String,
     /// 过期时间
+    #[serde(with = "datetime_format")]
     pub expires_time: DateTime,
     /// 刷新令牌
     pub refresh_token: String,
