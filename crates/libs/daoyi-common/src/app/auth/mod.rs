@@ -1,4 +1,5 @@
 use daoyi_common_support::utils::enumeration::UserTypeEnum;
+use daoyi_common_support::utils::errors::error::ApiResult;
 use serde::{Deserialize, Serialize};
 
 pub mod db_auth;
@@ -12,6 +13,6 @@ pub struct Principal {
 }
 
 pub trait Auth {
-    fn encode(&self, principal: &Principal) -> impl Future<Output = anyhow::Result<String>>;
-    fn decode(&self, token: &str) -> impl Future<Output = anyhow::Result<Principal>>;
+    fn encode(&self, principal: &Principal) -> impl Future<Output = ApiResult<String>>;
+    fn decode(&self, token: &str) -> impl Future<Output = ApiResult<Principal>>;
 }

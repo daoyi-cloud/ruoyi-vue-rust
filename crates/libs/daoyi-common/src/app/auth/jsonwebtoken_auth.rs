@@ -1,4 +1,5 @@
 use super::Principal;
+use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -72,7 +73,7 @@ impl JWT {
 }
 
 impl super::Auth for JWT {
-    async fn encode(&self, principal: &Principal) -> anyhow::Result<String> {
+    async fn encode(&self, principal: &Principal) -> ApiResult<String> {
         let current_timestamp = jsonwebtoken::get_current_timestamp();
         let claims = Claims {
             jti: xid::new().to_string(),
@@ -94,14 +95,26 @@ impl super::Auth for JWT {
         )?)
     }
 
-    async fn decode(&self, token: &str) -> anyhow::Result<Principal> {
+    async fn decode(&self, token: &str) -> ApiResult<Principal> {
         let claims: Claims =
             jsonwebtoken::decode(token, &self.decode_secret, &self.validation)?.claims;
         let mut parts = claims.sub.splitn(3, ":");
         let principal = Principal {
-            tenant_id: parts.next().unwrap().parse()?,
-            user_type: parts.next().unwrap().parse()?,
-            user_id: parts.next().unwrap().parse()?,
+            tenant_id: parts
+                .next()
+                .ok_or_else(|| ApiError::InvalidToken)?
+                .parse()
+                .map_err(|_| ApiError::InvalidToken)?,
+            user_type: parts
+                .next()
+                .ok_or_else(|| ApiError::InvalidToken)?
+                .parse()
+                .map_err(|_| ApiError::InvalidToken)?,
+            user_id: parts
+                .next()
+                .ok_or_else(|| ApiError::InvalidToken)?
+                .parse()
+                .map_err(|_| ApiError::InvalidToken)?,
         };
         Ok(principal)
     }

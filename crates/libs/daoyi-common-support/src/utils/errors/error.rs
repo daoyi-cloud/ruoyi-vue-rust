@@ -47,6 +47,8 @@ pub enum ApiError {
     JWT(#[from] jsonwebtoken::errors::Error),
     #[error("未授权: {0}")]
     Unauthenticated(String),
+    #[error("无效的Token")]
+    InvalidToken,
     #[allow(dead_code)]
     #[error("{0}")]
     Biz(String),
@@ -87,7 +89,9 @@ impl ApiError {
             | ApiError::Path(_)
             | ApiError::Json(_)
             | ApiError::Validation(_) => StatusCode::BAD_REQUEST,
-            ApiError::JWT(_) | ApiError::Unauthenticated(_) => StatusCode::UNAUTHORIZED,
+            ApiError::JWT(_) | ApiError::Unauthenticated(_) | ApiError::InvalidToken => {
+                StatusCode::UNAUTHORIZED
+            }
         }
     }
 }

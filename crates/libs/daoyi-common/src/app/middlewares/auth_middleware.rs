@@ -61,14 +61,8 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
                 ApiError::Unauthenticated(String::from("Authorization请求头必须存在"))
             })?;
             let principal = match auth_config.method() {
-                enumeration::AuthMethod::Jwt => get_default_jwt()
-                    .decode(&token)
-                    .await
-                    .map_err(|error| ApiError::Internal(error))?,
-                enumeration::AuthMethod::Db => get_default_db_auth()
-                    .decode(&token)
-                    .await
-                    .map_err(|error| ApiError::Internal(error))?,
+                enumeration::AuthMethod::Jwt => get_default_jwt().decode(&token).await?,
+                enumeration::AuthMethod::Db => get_default_db_auth().decode(&token).await?,
             };
             let tenant = request.extensions().get::<TenantContextHolder>();
             if let Some(tenant) = tenant {
