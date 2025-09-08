@@ -9,6 +9,15 @@ pub fn create_router() -> Router<AppState> {
     Router::new()
         .route("/get-permission-info", routing::get(get_permission_info))
         .route("/login", routing::post(login))
+        .route("/logout", routing::post(logout))
+}
+
+#[debug_handler]
+async fn logout(
+    Extension(tenant): Extension<TenantContextHolder>,
+    Extension(principal): Extension<Principal>,
+) -> ApiJsonResult<()> {
+    api_json_ok(AdminAuthService::new(tenant).logout(principal).await?)
 }
 
 #[debug_handler]

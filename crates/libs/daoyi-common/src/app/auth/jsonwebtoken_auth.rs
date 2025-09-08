@@ -115,6 +115,7 @@ impl super::Auth for JWT {
                 .ok_or_else(|| ApiError::InvalidToken)?
                 .parse()
                 .map_err(|_| ApiError::InvalidToken)?,
+            token: String::from(token),
         };
         Ok(principal)
     }

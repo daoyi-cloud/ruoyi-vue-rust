@@ -14,6 +14,7 @@ use daoyi_common_support::utils::errors::{
     OAUTH2_CLIENT_SCOPE_OVER,
     error::{ApiError, ApiResult},
 };
+use daoyi_entities_system::entity::prelude::{SystemOauth2AccessToken, SystemOauth2RefreshToken};
 use daoyi_entities_system::entity::{
     prelude::SystemOauth2Client, system_oauth2_access_token, system_oauth2_client,
     system_oauth2_refresh_token,
@@ -34,6 +35,27 @@ pub struct OAuth2ClientService {
 impl_tenant_instance!(OAuth2ClientService);
 
 impl OAuth2TokenService {
+    pub async fn remove_access_token(&self, access_token: &str) -> ApiResult<()> {
+        let db = database::get()?;
+        let token = SystemOauth2AccessToken::find()
+            .filter(system_oauth2_access_token::Column::AccessToken.eq(access_token))
+            .one(db)
+            .await?;
+        if token.is_none() {
+            return Ok(());
+        }
+        let token = token.unwrap();
+        redis_util::del(&format!("{OAUTH2_ACCESS_TOKEN}:{access_token}")).await?;
+        SystemOauth2AccessToken::delete_many()
+            .filter(system_oauth2_access_token::Column::AccessToken.eq(access_token))
+            .exec(db)
+            .await?;
+        SystemOauth2RefreshToken::delete_many()
+            .filter(system_oauth2_refresh_token::Column::RefreshToken.eq(token.refresh_token))
+            .exec(db)
+            .await?;
+        Ok(())
+    }
     pub async fn create_access_token(
         &self,
         user_id: i64,

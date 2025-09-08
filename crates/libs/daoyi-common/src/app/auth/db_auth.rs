@@ -33,6 +33,7 @@ impl super::Auth for DbAuth {
             user_id: at.user_id,
             user_type: utils::enumeration::UserTypeEnum::from_value(at.user_type)
                 .ok_or_else(|| ApiError::Unauthenticated(String::from("用户类型不存在")))?,
+            token: String::from(token),
         };
         redis_util::cache_set_json(&cache_key, &principal).await?;
         Ok(principal)

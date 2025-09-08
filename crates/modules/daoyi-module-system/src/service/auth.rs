@@ -15,6 +15,11 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
+    pub async fn logout(&self, principal: Principal) -> ApiResult<()> {
+        OAuth2TokenService::new(self.tenant.clone())
+            .remove_access_token(&principal.token)
+            .await
+    }
     pub async fn login(&self, req_vo: AuthLoginReqVo) -> ApiResult<AuthLoginRespVo> {
         let user = self
             .authenticate(&req_vo.username, &req_vo.password)

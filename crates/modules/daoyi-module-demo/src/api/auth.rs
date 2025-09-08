@@ -60,6 +60,7 @@ async fn login(
         tenant_id: tenant.tenant_id(),
         user_id: user.id,
         user_type: enumeration::UserTypeEnum::Member,
+        token: String::new(),
     };
     let access_token = get_default_jwt().encode(&principal).await?;
     tracing::info!("登录成功...JWT token: {access_token}");
