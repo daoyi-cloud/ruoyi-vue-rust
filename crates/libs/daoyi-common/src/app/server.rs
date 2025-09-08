@@ -14,6 +14,7 @@ use axum::{
     extract::{ConnectInfo, DefaultBodyLimit},
 };
 use bytesize::ByteSize;
+use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 use std::{net::SocketAddr, time::Duration};
 use tokio::net::TcpListener;
 use tower_http::{
@@ -96,6 +97,10 @@ impl Server {
             .route_layer(get_tenant_layer())
             .layer(cors)
             .layer(normalize_path)
+            .fallback(async || -> ApiResult<()> { Err(ApiError::NotFound) })
+            .method_not_allowed_fallback(async || -> ApiResult<()> {
+                Err(ApiError::MethodNotAllowed)
+            })
             .with_state(state)
     }
 }
