@@ -2,10 +2,11 @@ use crate::service::menu::MenuService;
 use crate::service::oauth2::OAuth2TokenService;
 use crate::service::permission::PermissionService;
 use crate::service::role::RoleService;
+use crate::service::sms::SmsCodeApi;
 use crate::service::user::AdminUserService;
 use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, AuthSmsSendReqVo,
-    UserVo,
+    SmsCodeSendReqDTO, UserVo,
 };
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
@@ -26,7 +27,11 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
-    pub async fn send_sms_code(&self, req_vo: AuthSmsSendReqVo) -> ApiResult<()> {
+    pub async fn send_sms_code(
+        &self,
+        req_vo: AuthSmsSendReqVo,
+        create_ip: String,
+    ) -> ApiResult<()> {
         // 如果是重置密码场景，需要校验图形验证码是否正确
         if SmsSceneEnum::AdminMemberResetPassword.scene() == req_vo.scene {
             self.validate_captcha(req_vo.captcha_verification.as_deref())
@@ -38,6 +43,13 @@ impl AdminAuthService {
             .await?
             .ok_or_else(|| ApiError::BizCode(AUTH_MOBILE_NOT_EXISTS))?;
         // 发送验证码
+        SmsCodeApi::new(self.tenant.clone())
+            .send_sms_code(SmsCodeSendReqDTO {
+                mobile: req_vo.mobile,
+                scene: req_vo.scene,
+                create_ip,
+            })
+            .await?;
         Ok(())
     }
     pub async fn register(&self, req_vo: AuthRegisterReqVo) -> ApiResult<AuthLoginRespVo> {

@@ -37,11 +37,12 @@ const USER_REGISTER_ENABLED_KEY: &str = "system.user.register-enabled";
 
 impl AdminUserService {
     pub async fn get_user_by_mobile(&self, mobile: &str) -> ApiResult<Option<system_users::Model>> {
-        Ok(self
+        let user = self
             .base_query()
             .filter(system_users::Column::Mobile.eq(mobile))
             .one(database::get()?)
-            .await?)
+            .await?;
+        Ok(user)
     }
     pub async fn register_user(&self, req_vo: &AuthRegisterReqVo) -> ApiResult<i64> {
         let enable = ConfigApi

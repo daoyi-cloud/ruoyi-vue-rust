@@ -3,10 +3,12 @@ use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
     AuthRegisterReqVo, AuthSmsSendReqVo,
 };
+use axum::extract::ConnectInfo;
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
 use daoyi_common_support::utils::errors::error::{ApiJsonResult, api_json_ok};
 use daoyi_common_support::utils::web::valid::{ValidJson, ValidQuery};
+use std::net::SocketAddr;
 
 pub fn create_router() -> Router<AppState> {
     Router::new()
@@ -15,15 +17,18 @@ pub fn create_router() -> Router<AppState> {
         .route("/refresh-token", routing::post(refresh_token))
         .route("/get-permission-info", routing::get(get_permission_info))
         .route("/register", routing::post(register))
-        .route("//send-sms-code", routing::post(send_sms_code))
+        .route("/send-sms-code", routing::post(send_sms_code))
 }
 
 #[debug_handler]
 async fn send_sms_code(
+    Extension(ConnectInfo(addr)): Extension<ConnectInfo<SocketAddr>>,
     Extension(tenant): Extension<TenantContextHolder>,
     ValidJson(params): ValidJson<AuthSmsSendReqVo>,
 ) -> ApiJsonResult<bool> {
-    AdminAuthService::new(tenant).send_sms_code(params).await?;
+    AdminAuthService::new(tenant)
+        .send_sms_code(params, addr.ip().to_string())
+        .await?;
     api_json_ok(true)
 }
 

@@ -11,7 +11,7 @@ use daoyi_common_support::utils::errors::{
 use daoyi_common_support::utils::id::generate_sms_code;
 use daoyi_common_support::utils::is_today;
 use daoyi_entities_system::entity::prelude::SystemSmsCode;
-use daoyi_entities_system::entity::{system_sms_code, system_users};
+use daoyi_entities_system::entity::system_sms_code;
 use sea_orm::sqlx::types::chrono::Local;
 use sea_orm::*;
 
@@ -34,8 +34,8 @@ impl SmsCodeService {
     // 提取公共查询条件到基础方法
     fn base_query(&self) -> Select<SystemSmsCode> {
         SystemSmsCode::find()
-            .filter(system_users::Column::TenantId.eq(self.tenant_id()))
-            .filter(system_users::Column::Deleted.eq(0))
+            .filter(system_sms_code::Column::TenantId.eq(self.tenant_id()))
+            .filter(system_sms_code::Column::Deleted.eq(0))
     }
 }
 impl SmsCodeService {
@@ -51,6 +51,12 @@ impl SmsCodeService {
             )
             .await?;
         // 发送验证码
+        tracing::info!(
+            "发送验证码: scene_enum: {}, mobile: {}, code: {}",
+            &scene_enum,
+            &req_dto.mobile,
+            &code
+        );
         Ok(())
     }
     async fn create_sms_code(&self, mobile: &str, scene: i32, ip: &str) -> ApiResult<String> {
