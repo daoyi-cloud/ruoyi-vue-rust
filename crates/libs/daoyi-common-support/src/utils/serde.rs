@@ -1,7 +1,9 @@
+use humantime::parse_duration;
 use serde::{Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
+use std::time::Duration;
 
 #[derive(Deserialize)]
 #[serde(untagged)]
@@ -81,4 +83,12 @@ pub mod datetime_format {
         let s = String::deserialize(deserializer)?;
         DateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
     }
+}
+
+pub fn deserialize_human_duration<'de, D>(deserializer: D) -> Result<Duration, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s = String::deserialize(deserializer)?;
+    parse_duration(&s).map_err(serde::de::Error::custom)
 }

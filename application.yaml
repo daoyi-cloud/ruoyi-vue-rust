@@ -26,3 +26,5 @@ auth:
     - /system/admin-api/auth/login
     - /system/admin-api/auth/refresh-token
     - /system/admin-api/auth/register
+sms_code:
+  expire_times: 5m

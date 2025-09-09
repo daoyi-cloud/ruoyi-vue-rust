@@ -2,8 +2,10 @@ mod auth;
 mod database;
 mod redis;
 mod server;
+mod sms_code;
 mod tenant;
 
+use crate::config::sms_code::SmsCodeConfig;
 use anyhow::{Context, anyhow};
 pub use auth::AuthConfig;
 use config::{Config, FileFormat};
@@ -26,6 +28,7 @@ pub struct AppConfig {
     #[serde(default = "TenantConfig::default")]
     tenant: TenantConfig,
     redis: RedisConfig,
+    sms_code: SmsCodeConfig,
 }
 
 impl AppConfig {
@@ -67,6 +70,9 @@ impl AppConfig {
     }
     pub fn redis(&self) -> &RedisConfig {
         &self.redis
+    }
+    pub fn sms_code(&self) -> &SmsCodeConfig {
+        &self.sms_code
     }
 }
 
