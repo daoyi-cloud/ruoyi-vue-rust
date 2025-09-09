@@ -10,6 +10,9 @@ pub struct AuthConfig {
     /// Token是否自动续期
     #[serde(default = "default_auto_renew")]
     auto_renew: bool,
+    /// 验证码开关
+    #[serde(default = "default_captcha")]
+    captcha: bool,
 }
 
 impl Default for AuthConfig {
@@ -18,6 +21,7 @@ impl Default for AuthConfig {
             method: default_method(),
             ignore_urls: default_ignore_urls(),
             auto_renew: default_auto_renew(),
+            captcha: default_captcha(),
         }
     }
 }
@@ -32,6 +36,9 @@ impl AuthConfig {
     pub fn auto_renew(&self) -> bool {
         self.auto_renew
     }
+    pub fn captcha(&self) -> bool {
+        self.captcha
+    }
 }
 fn default_method() -> enumeration::AuthMethod {
     enumeration::AuthMethod::Jwt
@@ -43,4 +50,8 @@ fn default_ignore_urls() -> Vec<String> {
 
 fn default_auto_renew() -> bool {
     true
+}
+
+fn default_captcha() -> bool {
+    false
 }

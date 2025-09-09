@@ -17,7 +17,15 @@ pub fn is_mobile_phone(value: &str) -> Result<(), ValidationError> {
     Ok(())
 }
 
-fn build_validation_error(message: &'static str) -> ValidationError {
+pub fn validate_username(username: &str) -> Result<(), ValidationError> {
+    if username.chars().all(|c| c.is_ascii_alphanumeric()) {
+        Ok(())
+    } else {
+        Err(build_validation_error("用户名只能包含数字和字母"))
+    }
+}
+
+pub fn build_validation_error(message: &'static str) -> ValidationError {
     ValidationError {
         code: Cow::from("invalid"),
         message: Some(Cow::from(message)),

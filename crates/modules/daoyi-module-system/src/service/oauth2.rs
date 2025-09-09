@@ -1,6 +1,6 @@
-use crate::impl_tenant_instance;
 use crate::service::user::AdminUserService;
 use daoyi_common::app::{TenantContextHolder, database, redis_util};
+use daoyi_common::impl_tenant_instance;
 use daoyi_common::security::login_user::LoginUser;
 use daoyi_common_support::support::orm::create_with_common_fields;
 use daoyi_common_support::utils;

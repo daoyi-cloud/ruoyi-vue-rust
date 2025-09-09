@@ -1,17 +1,21 @@
-use crate::impl_tenant_instance;
 use crate::service::menu::MenuService;
 use crate::service::oauth2::OAuth2TokenService;
 use crate::service::permission::PermissionService;
 use crate::service::role::RoleService;
 use crate::service::user::AdminUserService;
-use crate::vo::auth::{AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, UserVo};
+use crate::vo::auth::{
+    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, UserVo,
+};
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
+use daoyi_common::{config, impl_tenant_instance};
 use daoyi_common_support::utils::enumeration::{
     CommonStatusEnum, UserTypeEnum, oauth2_client_constants,
 };
 use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
-use daoyi_common_support::utils::errors::{AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED};
+use daoyi_common_support::utils::errors::{
+    AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED, AUTH_REGISTER_CAPTCHA_CODE_ERROR,
+};
 use daoyi_common_support::utils::{RANDOM_PASSWORD, enumeration, verify_password};
 use daoyi_entities_system::entity::system_users;
 
@@ -20,6 +24,38 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
+    pub async fn register(&self, req_vo: AuthRegisterReqVo) -> ApiResult<AuthLoginRespVo> {
+        // 1. 校验验证码
+        self.validate_captcha(req_vo.captcha_verification.as_deref())
+            .await?;
+        // 2. 校验用户名是否已存在
+        let user = self
+            .authenticate(&req_vo.username, &req_vo.password)
+            .await?;
+        self.create_token_after_login_success(
+            user.id,
+            &user.username,
+            enumeration::LoginLogTypeEnum::LoginUsername,
+        )
+        .await
+    }
+
+    async fn validate_captcha(&self, captcha_verification: Option<&str>) -> ApiResult<()> {
+        if config::get().auth().captcha() {
+            if captcha_verification.is_none() {
+                return Err(ApiError::BizCodeWithArgs(
+                    AUTH_REGISTER_CAPTCHA_CODE_ERROR,
+                    vec![String::from("验证码不能为空")],
+                ));
+            }
+            return Err(ApiError::BizCodeWithArgs(
+                AUTH_REGISTER_CAPTCHA_CODE_ERROR,
+                vec![String::from("未实现验证逻辑")],
+            ));
+        }
+        Ok(())
+    }
+
     pub async fn refresh_token(&self, refresh_token: String) -> ApiResult<AuthLoginRespVo> {
         let token = OAuth2TokenService::new(self.tenant.clone())
             .refresh_access_token(refresh_token, oauth2_client_constants::CLIENT_ID_DEFAULT)

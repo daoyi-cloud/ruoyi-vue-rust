@@ -1,6 +1,6 @@
-use crate::impl_tenant_instance;
 use crate::service::menu::MenuService;
 use daoyi_common::app::database;
+use daoyi_common::impl_tenant_instance;
 use daoyi_common_support::support::tenant::TenantContextHolder;
 use daoyi_common_support::utils::enumeration::RoleCode;
 use daoyi_common_support::utils::errors::error::ApiResult;

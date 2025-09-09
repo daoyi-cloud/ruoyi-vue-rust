@@ -1,6 +1,7 @@
 use crate::service::auth::AdminAuthService;
 use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
+    AuthRegisterReqVo,
 };
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
@@ -13,6 +14,15 @@ pub fn create_router() -> Router<AppState> {
         .route("/logout", routing::post(logout))
         .route("/refresh-token", routing::post(refresh_token))
         .route("/get-permission-info", routing::get(get_permission_info))
+        .route("/register", routing::get(register))
+}
+
+#[debug_handler]
+async fn register(
+    Extension(tenant): Extension<TenantContextHolder>,
+    ValidJson(params): ValidJson<AuthRegisterReqVo>,
+) -> ApiJsonResult<AuthLoginRespVo> {
+    api_json_ok(AdminAuthService::new(tenant).register(params).await?)
 }
 
 #[debug_handler]
