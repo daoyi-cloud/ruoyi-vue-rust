@@ -4,17 +4,19 @@ use crate::service::permission::PermissionService;
 use crate::service::role::RoleService;
 use crate::service::user::AdminUserService;
 use crate::vo::auth::{
-    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, UserVo,
+    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, AuthSmsSendReqVo,
+    UserVo,
 };
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
 use daoyi_common::{config, impl_tenant_instance};
 use daoyi_common_support::utils::enumeration::{
-    CommonStatusEnum, UserTypeEnum, oauth2_client_constants,
+    CommonStatusEnum, SmsSceneEnum, UserTypeEnum, oauth2_client_constants,
 };
 use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 use daoyi_common_support::utils::errors::{
-    AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED, AUTH_REGISTER_CAPTCHA_CODE_ERROR,
+    AUTH_LOGIN_BAD_CREDENTIALS, AUTH_LOGIN_USER_DISABLED, AUTH_MOBILE_NOT_EXISTS,
+    AUTH_REGISTER_CAPTCHA_CODE_ERROR,
 };
 use daoyi_common_support::utils::{RANDOM_PASSWORD, enumeration, verify_password};
 use daoyi_entities_system::entity::system_users;
@@ -24,6 +26,20 @@ pub struct AdminAuthService {
 }
 impl_tenant_instance!(AdminAuthService);
 impl AdminAuthService {
+    pub async fn send_sms_code(&self, req_vo: AuthSmsSendReqVo) -> ApiResult<()> {
+        // 如果是重置密码场景，需要校验图形验证码是否正确
+        if SmsSceneEnum::AdminMemberResetPassword.scene() == req_vo.scene {
+            self.validate_captcha(req_vo.captcha_verification.as_deref())
+                .await?;
+        }
+        // 登录场景，验证是否存在
+        AdminUserService::new(self.tenant.clone())
+            .get_user_by_mobile(req_vo.mobile.as_ref())
+            .await?
+            .ok_or_else(|| ApiError::BizCode(AUTH_MOBILE_NOT_EXISTS))?;
+        // 发送验证码
+        Ok(())
+    }
     pub async fn register(&self, req_vo: AuthRegisterReqVo) -> ApiResult<AuthLoginRespVo> {
         // 1. 校验验证码
         self.validate_captcha(req_vo.captcha_verification.as_deref())

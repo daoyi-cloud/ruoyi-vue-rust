@@ -6,6 +6,30 @@ use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use validator::Validate;
+
+/// 短信验证码的发送 Request DTO
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct SmsCodeSendReqDTO {
+    /// 手机号
+    pub mobile: String,
+    /// 发送场景
+    pub scene: i32,
+    /// 发送 IP
+    pub create_ip: String,
+}
+
+/// AuthSmsSendReqVO，管理后台 - 发送手机验证码 Request VO
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthSmsSendReqVo {
+    /// 验证码，验证码开启时，需要传递
+    pub captcha_verification: Option<String>,
+    /// 手机号
+    pub mobile: String,
+    /// 短信场景
+    pub scene: i32,
+}
 /// AuthRegisterReqVO，管理后台 - Register Request VO
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]

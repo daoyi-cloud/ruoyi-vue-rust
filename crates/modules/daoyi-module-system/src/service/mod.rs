@@ -6,6 +6,7 @@ pub mod oauth2;
 pub mod permission;
 mod post;
 pub mod role;
+mod sms;
 pub mod social;
 pub mod tenant;
 pub mod user;

@@ -236,7 +236,7 @@ impl UserTypeEnum {
     }
 }
 impl Display for UserTypeEnum {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}-{}", self.value(), self.name())
     }
 }
@@ -475,5 +475,119 @@ impl MenuType {
     /// 获取菜单类型对应的整数值
     pub fn get_type(&self) -> i32 {
         *self as i32
+    }
+}
+
+use std::fmt;
+
+// 定义 SmsSceneEnum 枚举
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SmsSceneEnum {
+    MemberLogin,
+    MemberUpdateMobile,
+    MemberUpdatePassword,
+    MemberResetPassword,
+    AdminMemberLogin,
+    AdminMemberRegister,
+    AdminMemberResetPassword,
+}
+
+impl SmsSceneEnum {
+    // 获取场景编号
+    pub fn scene(&self) -> i32 {
+        match self {
+            SmsSceneEnum::MemberLogin => 1,
+            SmsSceneEnum::MemberUpdateMobile => 2,
+            SmsSceneEnum::MemberUpdatePassword => 3,
+            SmsSceneEnum::MemberResetPassword => 4,
+            SmsSceneEnum::AdminMemberLogin => 21,
+            SmsSceneEnum::AdminMemberRegister => 22,
+            SmsSceneEnum::AdminMemberResetPassword => 23,
+        }
+    }
+
+    // 获取模板编码
+    pub fn template_code(&self) -> &'static str {
+        match self {
+            SmsSceneEnum::MemberLogin => "user-sms-login",
+            SmsSceneEnum::MemberUpdateMobile => "user-update-mobile",
+            SmsSceneEnum::MemberUpdatePassword => "user-update-password",
+            SmsSceneEnum::MemberResetPassword => "user-reset-password",
+            SmsSceneEnum::AdminMemberLogin => "admin-sms-login",
+            SmsSceneEnum::AdminMemberRegister => "admin-sms-register",
+            SmsSceneEnum::AdminMemberResetPassword => "admin-reset-password",
+        }
+    }
+
+    // 获取描述
+    pub fn description(&self) -> &'static str {
+        match self {
+            SmsSceneEnum::MemberLogin => "会员用户 - 手机号登陆",
+            SmsSceneEnum::MemberUpdateMobile => "会员用户 - 修改手机",
+            SmsSceneEnum::MemberUpdatePassword => "会员用户 - 修改密码",
+            SmsSceneEnum::MemberResetPassword => "会员用户 - 忘记密码",
+            SmsSceneEnum::AdminMemberLogin => "后台用户 - 手机号登录",
+            SmsSceneEnum::AdminMemberRegister => "后台用户 - 手机号注册",
+            SmsSceneEnum::AdminMemberResetPassword => "后台用户 - 忘记密码",
+        }
+    }
+
+    // 根据场景编号获取枚举值
+    pub fn from_scene(scene: i32) -> Option<SmsSceneEnum> {
+        match scene {
+            1 => Some(SmsSceneEnum::MemberLogin),
+            2 => Some(SmsSceneEnum::MemberUpdateMobile),
+            3 => Some(SmsSceneEnum::MemberUpdatePassword),
+            4 => Some(SmsSceneEnum::MemberResetPassword),
+            21 => Some(SmsSceneEnum::AdminMemberLogin),
+            22 => Some(SmsSceneEnum::AdminMemberRegister),
+            23 => Some(SmsSceneEnum::AdminMemberResetPassword),
+            _ => None,
+        }
+    }
+
+    // 获取所有场景编号数组
+    pub fn all_scenes() -> Vec<i32> {
+        vec![1, 2, 3, 4, 21, 22, 23]
+    }
+}
+
+// 实现 Display trait 以便打印描述
+impl Display for SmsSceneEnum {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.description())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sms_scene_enum() {
+        let scene = SmsSceneEnum::from_scene(1).unwrap();
+        assert_eq!(scene, SmsSceneEnum::MemberLogin);
+        assert_eq!(scene.scene(), 1);
+        assert_eq!(scene.template_code(), "user-sms-login");
+        assert_eq!(scene.description(), "会员用户 - 手机号登陆");
+
+        let admin_scene = SmsSceneEnum::from_scene(21).unwrap();
+        assert_eq!(admin_scene, SmsSceneEnum::AdminMemberLogin);
+        assert_eq!(admin_scene.scene(), 21);
+        assert_eq!(admin_scene.template_code(), "admin-sms-login");
+        assert_eq!(admin_scene.description(), "后台用户 - 手机号登录");
+    }
+
+    #[test]
+    fn test_invalid_scene() {
+        assert_eq!(SmsSceneEnum::from_scene(99), None);
+    }
+
+    #[test]
+    fn test_all_scenes() {
+        let scenes = SmsSceneEnum::all_scenes();
+        assert_eq!(scenes.len(), 7);
+        assert!(scenes.contains(&1));
+        assert!(scenes.contains(&21));
     }
 }

@@ -1,7 +1,7 @@
 use crate::service::auth::AdminAuthService;
 use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
-    AuthRegisterReqVo,
+    AuthRegisterReqVo, AuthSmsSendReqVo,
 };
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
@@ -15,6 +15,16 @@ pub fn create_router() -> Router<AppState> {
         .route("/refresh-token", routing::post(refresh_token))
         .route("/get-permission-info", routing::get(get_permission_info))
         .route("/register", routing::post(register))
+        .route("//send-sms-code", routing::post(send_sms_code))
+}
+
+#[debug_handler]
+async fn send_sms_code(
+    Extension(tenant): Extension<TenantContextHolder>,
+    ValidJson(params): ValidJson<AuthSmsSendReqVo>,
+) -> ApiJsonResult<bool> {
+    AdminAuthService::new(tenant).send_sms_code(params).await?;
+    api_json_ok(true)
 }
 
 #[debug_handler]
