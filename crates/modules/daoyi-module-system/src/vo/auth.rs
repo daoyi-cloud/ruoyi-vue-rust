@@ -1,6 +1,7 @@
 use daoyi_common_support::utils::serde::datetime_format;
 use daoyi_common_support::utils::web::validation::validate_username;
 use daoyi_entities_system::entity::{system_menu, system_oauth2_access_token, system_users};
+use sea_orm::Set;
 use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -21,6 +22,17 @@ pub struct AuthRegisterReqVo {
     #[validate(custom(function = "validate_username"))]
     #[validate(length(min = 4, max = 30, message = "用户账号长度为 4-30 个字符"))]
     pub username: String,
+}
+
+impl From<AuthRegisterReqVo> for system_users::ActiveModel {
+    fn from(value: AuthRegisterReqVo) -> Self {
+        Self {
+            username: Set(value.username),
+            nickname: Set(value.nickname),
+            password: Set(value.password),
+            ..Default::default()
+        }
+    }
 }
 
 /// AuthLoginReqVO，管理后台 - 账号密码登录 Request VO，如果登录并绑定社交用户，需要传递 social 开头的参数

@@ -1,9 +1,11 @@
 pub mod auth;
+pub mod dept;
 pub mod logger;
-mod menu;
-mod oauth2;
-mod permission;
-mod role;
+pub mod menu;
+pub mod oauth2;
+pub mod permission;
+mod post;
+pub mod role;
 pub mod social;
-mod tenant;
+pub mod tenant;
 pub mod user;

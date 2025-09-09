@@ -25,3 +25,4 @@ auth:
     - /demo/api/redis/current-test-key
     - /system/admin-api/auth/login
     - /system/admin-api/auth/refresh-token
+    - /system/admin-api/auth/register

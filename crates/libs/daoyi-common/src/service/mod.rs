@@ -10,7 +10,7 @@ macro_rules! impl_tenant_instance {
                 Self { tenant }
             }
             #[allow(dead_code)]
-            pub fn tenant_id(&self) -> i64 {
+            fn tenant_id(&self) -> i64 {
                 self.tenant.tenant_id()
             }
         }

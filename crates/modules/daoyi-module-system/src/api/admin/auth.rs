@@ -14,7 +14,7 @@ pub fn create_router() -> Router<AppState> {
         .route("/logout", routing::post(logout))
         .route("/refresh-token", routing::post(refresh_token))
         .route("/get-permission-info", routing::get(get_permission_info))
-        .route("/register", routing::get(register))
+        .route("/register", routing::post(register))
 }
 
 #[debug_handler]

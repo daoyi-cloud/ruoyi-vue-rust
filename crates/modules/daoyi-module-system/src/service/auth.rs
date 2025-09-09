@@ -29,12 +29,12 @@ impl AdminAuthService {
         self.validate_captcha(req_vo.captcha_verification.as_deref())
             .await?;
         // 2. 校验用户名是否已存在
-        let user = self
-            .authenticate(&req_vo.username, &req_vo.password)
+        let user_id = AdminUserService::new(self.tenant.clone())
+            .register_user(&req_vo)
             .await?;
         self.create_token_after_login_success(
-            user.id,
-            &user.username,
+            user_id,
+            &req_vo.username,
             enumeration::LoginLogTypeEnum::LoginUsername,
         )
         .await
