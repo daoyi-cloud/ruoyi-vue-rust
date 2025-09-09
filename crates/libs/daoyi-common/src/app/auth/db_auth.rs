@@ -25,7 +25,7 @@ impl super::Auth for DbAuth {
             .one(database::get()?)
             .await?
             .ok_or_else(|| ApiError::Unauthenticated(String::from("访问令牌不存在")))?;
-        if utils::is_expired(at.expires_time)? {
+        if utils::is_expired(&at.expires_time)? {
             if crate::config::get().auth().auto_renew() {
                 // 自动续期,即为永不过期，但是数据暂时不改变，前端拿到的Token看起来还是保持过期状态
             } else {

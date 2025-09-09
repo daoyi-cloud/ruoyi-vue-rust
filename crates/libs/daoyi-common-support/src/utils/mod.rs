@@ -39,6 +39,10 @@ pub fn path_any_matches<A: AsRef<str>>(patterns: &[A], target: &str) -> ApiResul
     Ok(false)
 }
 
-pub fn is_expired(t: DateTime) -> ApiResult<bool> {
+pub fn is_expired(t: &DateTime) -> ApiResult<bool> {
     Ok(t.lt(&Local::now().naive_local()))
+}
+
+pub fn is_today(t: &DateTime) -> ApiResult<bool> {
+    Ok(t.date() == Local::now().naive_local().date())
 }

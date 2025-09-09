@@ -15,7 +15,7 @@ pub struct Model {
     pub create_ip: String,
     pub scene: i32,
     pub today_index: i32,
-    pub used: i32,
+    pub used: bool,
     pub used_time: Option<DateTime>,
     pub used_ip: Option<String>,
     pub creator: Option<String>,

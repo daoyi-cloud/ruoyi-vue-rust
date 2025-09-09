@@ -70,7 +70,7 @@ impl OAuth2TokenService {
                 .await?;
         }
         // 已过期的情况下，删除刷新令牌
-        if is_expired(refresh_token.expires_time)? {
+        if is_expired(&refresh_token.expires_time)? {
             SystemOauth2RefreshToken::delete_by_id(refresh_token.id)
                 .exec(db)
                 .await?;

@@ -98,7 +98,7 @@ async fn valid_tenant(tenant_id: i64) -> ApiResult<()> {
     if enumeration::CommonStatusEnum::is_disable(tenant.status) {
         return Err(ApiError::BizCode(TENANT_DISABLE));
     }
-    if is_expired(tenant.expire_time)? {
+    if is_expired(&tenant.expire_time)? {
         return Err(ApiError::BizCodeWithArgs(TENANT_EXPIRE, vec![tenant.name]));
     }
     redis_util::cache_set(cache_key, true).await?;
