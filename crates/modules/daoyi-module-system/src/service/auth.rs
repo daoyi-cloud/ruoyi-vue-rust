@@ -148,7 +148,7 @@ impl AdminAuthService {
         if !result {
             return Err(ApiError::BizCode(AUTH_LOGIN_BAD_CREDENTIALS));
         }
-        if enumeration::CommonStatusEnum::is_disable(user.status) {
+        if CommonStatusEnum::is_disable(user.status) {
             return Err(ApiError::BizCode(AUTH_LOGIN_USER_DISABLED));
         }
         Ok(user)
