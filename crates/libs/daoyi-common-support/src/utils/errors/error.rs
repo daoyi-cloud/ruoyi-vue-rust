@@ -64,6 +64,8 @@ pub enum ApiError {
     Internal(#[from] anyhow::Error),
     #[error("{0}")]
     SerdeJson(#[from] serde_json::Error),
+    #[error("{0}")]
+    ValidationError(#[from] validator::ValidationError),
 }
 
 impl From<ValidRejection<ApiError>> for ApiError {
@@ -90,7 +92,8 @@ impl ApiError {
             ApiError::Query(_)
             | ApiError::Path(_)
             | ApiError::Json(_)
-            | ApiError::Validation(_) => StatusCode::BAD_REQUEST,
+            | ApiError::Validation(_)
+            | ApiError::ValidationError(_) => StatusCode::BAD_REQUEST,
             ApiError::JWT(_)
             | ApiError::Unauthenticated(_)
             | ApiError::InvalidToken
