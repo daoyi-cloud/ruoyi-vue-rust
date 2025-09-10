@@ -1,17 +1,19 @@
 use crate::vo::auth::SmsCodeSendReqDTO;
 use daoyi_common::app::{database, redis_util};
 use daoyi_common::{config, impl_tenant_instance};
+use daoyi_common_support::models::KeyValue;
 use daoyi_common_support::support::orm::create_with_common_fields;
 use daoyi_common_support::support::tenant::TenantContextHolder;
-use daoyi_common_support::utils::enumeration::SmsSceneEnum;
 use daoyi_common_support::utils::enumeration::redis_key_constants::SMS_TEMPLATE;
+use daoyi_common_support::utils::enumeration::{CommonStatusEnum, SmsSceneEnum};
 use daoyi_common_support::utils::errors::error::{ApiError, ApiResult};
 use daoyi_common_support::utils::errors::{
     SMS_CHANNEL_NOT_EXISTS, SMS_CODE_EXCEED_SEND_MAXIMUM_QUANTITY_PER_DAY, SMS_CODE_SEND_TOO_FAST,
-    SMS_SEND_MOBILE_NOT_EXISTS, SMS_SEND_TEMPLATE_NOT_EXISTS,
+    SMS_SEND_MOBILE_NOT_EXISTS, SMS_SEND_MOBILE_TEMPLATE_PARAM_MISS, SMS_SEND_TEMPLATE_NOT_EXISTS,
 };
 use daoyi_common_support::utils::id::generate_sms_code;
 use daoyi_common_support::utils::is_today;
+use daoyi_common_support::utils::str_utils::format_template_content;
 use daoyi_common_support::utils::web::validation::is_mobile_phone;
 use daoyi_entities_system::entity::prelude::{
     SystemSmsChannel, SystemSmsCode, SystemSmsLog, SystemSmsTemplate,
@@ -117,6 +119,21 @@ impl SmsChannelService {
             .await?)
     }
 }
+
+impl SmsLogService {
+    pub async fn create_sms_log(
+        &self,
+        mobile: &str,
+        user_id: Option<i64>,
+        user_type: Option<i32>,
+        is_send: bool,
+        template: &system_sms_template::Model,
+        template_content: &str,
+        template_params: &HashMap<&str, String>,
+    ) -> ApiResult<i64> {
+        todo!()
+    }
+}
 impl SmsSendService {
     pub async fn send_single_sms(
         &self,
@@ -124,7 +141,7 @@ impl SmsSendService {
         user_id: Option<i64>,
         user_type: Option<i32>,
         template_code: &str,
-        template_params: HashMap<&str, &str>,
+        template_params: HashMap<&str, String>,
     ) -> ApiResult<i64> {
         // 校验短信模板是否合法
         let template = self.validate_sms_template(template_code).await?;
@@ -132,7 +149,48 @@ impl SmsSendService {
         let channel = self.validate_sms_channel(template.channel_id).await?;
         // 校验手机号码是否存在
         self.validate_mobile(mobile).await?;
-        Ok(0)
+        // 构建有序的模板参数。为什么放在这个位置，是提前保证模板参数的正确性，而不是到了插入发送日志
+        let new_template_params = self
+            .build_template_params(&template, &template_params)
+            .await?;
+        // 创建发送日志。如果模板被禁用，则不发送短信，只记录日志
+        let is_send = CommonStatusEnum::is_enable(template.status)
+            && CommonStatusEnum::is_enable(channel.status);
+        let content = format_template_content(&template.content, &template_params);
+        tracing::info!("发送短信：{}", content);
+        let send_log_id = SmsLogService::new(self.tenant.clone())
+            .create_sms_log(
+                mobile,
+                user_id,
+                user_type,
+                is_send,
+                &template,
+                content.as_ref(),
+                &template_params,
+            )
+            .await?;
+        Ok(send_log_id)
+    }
+    // 构建模板参数的函数
+    async fn build_template_params(
+        &self,
+        template: &system_sms_template::Model,
+        template_params: &HashMap<&str, String>,
+    ) -> ApiResult<Vec<KeyValue<String, String>>> {
+        let result = serde_json::from_str::<Vec<&str>>(template.params.as_ref())?
+            .into_iter()
+            .map(|key| match template_params.get(key) {
+                Some(value) => Ok(KeyValue {
+                    key: key.to_string(),
+                    value: value.to_string(),
+                }),
+                None => Err(ApiError::BizCodeWithArgs(
+                    SMS_SEND_MOBILE_TEMPLATE_PARAM_MISS,
+                    vec![String::from(key)],
+                )),
+            })
+            .collect::<ApiResult<Vec<KeyValue<String, String>>>>()?;
+        Ok(result)
     }
     pub async fn validate_mobile(&self, mobile: &str) -> ApiResult<()> {
         // 验证手机号码
@@ -186,7 +244,7 @@ impl SmsCodeService {
                 None,
                 None,
                 scene_enum.template_code(),
-                HashMap::from([("code", code.as_ref())]),
+                HashMap::from([("code", code)]),
             )
             .await?;
         Ok(())

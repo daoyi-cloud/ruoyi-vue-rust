@@ -2,6 +2,7 @@ pub mod enumeration;
 pub mod errors;
 pub mod id;
 pub mod serde;
+pub mod str_utils;
 pub mod web;
 
 use crate::utils::errors::error::{ApiError, ApiResult};
