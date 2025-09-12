@@ -157,7 +157,6 @@ impl SmsSendService {
         let is_send = CommonStatusEnum::is_enable(template.status)
             && CommonStatusEnum::is_enable(channel.status);
         let content = format_template_content(&template.content, &template_params);
-        tracing::info!("发送短信：{}", content);
         let send_log_id = SmsLogService::new(self.tenant.clone())
             .create_sms_log(
                 mobile,
@@ -169,6 +168,7 @@ impl SmsSendService {
                 &template_params,
             )
             .await?;
+        // 发送 MQ 消息，异步执行发送短信
         Ok(send_log_id)
     }
     // 构建模板参数的函数
@@ -232,12 +232,6 @@ impl SmsCodeService {
             .create_sms_code(mobile, req_dto.scene, req_dto.create_ip.as_ref())
             .await?;
         // 发送验证码
-        // tracing::info!(
-        //     "发送验证码: scene_enum: {}, mobile: {}, code: {}",
-        //     &scene_enum,
-        //     &req_dto.mobile,
-        //     &code
-        // );
         SmsSendService::new(self.tenant.clone())
             .send_single_sms(
                 mobile,
