@@ -1,9 +1,9 @@
+use crate::service::admin_user::AdminUserService;
 use crate::service::menu::MenuService;
-use crate::service::oauth2::OAuth2TokenService;
+use crate::service::oauth2_token::OAuth2TokenService;
 use crate::service::permission::PermissionService;
 use crate::service::role::RoleService;
-use crate::service::sms::SmsCodeApi;
-use crate::service::user::AdminUserService;
+use crate::service::sms_code_api::SmsCodeApi;
 use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, AuthSmsSendReqVo,
     SmsCodeSendReqDTO, UserVo,

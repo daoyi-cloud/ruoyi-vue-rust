@@ -1,4 +1,4 @@
-use crate::service::auth::AdminAuthService;
+use crate::service::admin_auth::AdminAuthService;
 use crate::vo::auth::{
     AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
     AuthRegisterReqVo, AuthSmsSendReqVo,
