@@ -38,6 +38,7 @@ impl Server {
 
         let listener = TcpListener::bind(format!("0.0.0.0:{}", self.config.port())).await?;
         tracing::info!("Listening on {}", listener.local_addr()?);
+        tracing::info!("goto http://{}", listener.local_addr()?);
         axum::serve(
             listener,
             router.into_make_service_with_connect_info::<SocketAddr>(),
