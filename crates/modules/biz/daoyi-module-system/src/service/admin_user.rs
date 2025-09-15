@@ -1,7 +1,7 @@
 use crate::service::dept::DeptService;
 use crate::service::post::PostService;
 use crate::service::tenant::TenantService;
-use crate::vo::auth::AuthRegisterReqVo;
+use crate::vo::auth::auth_register_req_vo::AuthRegisterReqVo;
 use daoyi_common::app::{TenantContextHolder, database};
 use daoyi_common::impl_tenant_instance;
 use daoyi_common::service::ConfigApi;

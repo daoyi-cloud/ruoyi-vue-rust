@@ -1,3 +1,3 @@
 pub mod api;
-mod service;
-mod vo;
+pub mod service;
+pub mod vo;

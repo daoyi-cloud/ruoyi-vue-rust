@@ -1,5 +1,5 @@
 use crate::service::sms_send::SmsSendService;
-use crate::vo::auth::SmsCodeSendReqDTO;
+use crate::vo::sms::sms_code_send_req_dto::SmsCodeSendReqDTO;
 use daoyi_common::app::database;
 use daoyi_common::{config, impl_tenant_instance};
 use daoyi_common_support::support::orm::create_with_common_fields;

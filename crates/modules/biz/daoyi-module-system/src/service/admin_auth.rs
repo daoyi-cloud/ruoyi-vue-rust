@@ -4,10 +4,13 @@ use crate::service::oauth2_token::OAuth2TokenService;
 use crate::service::permission::PermissionService;
 use crate::service::role::RoleService;
 use crate::service::sms_code_api::SmsCodeApi;
-use crate::vo::auth::{
-    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRegisterReqVo, AuthSmsSendReqVo,
-    SmsCodeSendReqDTO, UserVo,
-};
+use crate::vo::auth::auth_login_req_vo::AuthLoginReqVo;
+use crate::vo::auth::auth_login_resp_vo::AuthLoginRespVo;
+use crate::vo::auth::auth_permission_info_resp_vo::AuthPermissionInfoRespVo;
+use crate::vo::auth::auth_register_req_vo::AuthRegisterReqVo;
+use crate::vo::auth::auth_sms_send_req_vo::AuthSmsSendReqVo;
+use crate::vo::sms::sms_code_send_req_dto::SmsCodeSendReqDTO;
+use crate::vo::user::user_vo::UserVo;
 use daoyi_common::app::TenantContextHolder;
 use daoyi_common::app::auth::Principal;
 use daoyi_common::{config, impl_tenant_instance};

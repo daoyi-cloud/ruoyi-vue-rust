@@ -1,4 +1,4 @@
-use crate::vo::auth::MenuVo;
+use crate::vo::menu::menu_vo::MenuVo;
 use daoyi_common::app::database;
 use daoyi_common::impl_tenant_instance;
 use daoyi_common_support::support::tenant::TenantContextHolder;

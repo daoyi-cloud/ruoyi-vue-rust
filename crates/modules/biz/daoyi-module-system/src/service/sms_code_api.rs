@@ -1,5 +1,5 @@
 use crate::service::sms_code::SmsCodeService;
-use crate::vo::auth::SmsCodeSendReqDTO;
+use crate::vo::sms::sms_code_send_req_dto::SmsCodeSendReqDTO;
 use daoyi_common::impl_tenant_instance;
 use daoyi_common_support::support::tenant::TenantContextHolder;
 use daoyi_common_support::utils::errors::error::ApiResult;

@@ -1,8 +1,10 @@
 use crate::service::admin_auth::AdminAuthService;
-use crate::vo::auth::{
-    AuthLoginReqVo, AuthLoginRespVo, AuthPermissionInfoRespVo, AuthRefreshTokenReqVo,
-    AuthRegisterReqVo, AuthSmsSendReqVo,
-};
+use crate::vo::auth::auth_login_req_vo::AuthLoginReqVo;
+use crate::vo::auth::auth_login_resp_vo::AuthLoginRespVo;
+use crate::vo::auth::auth_permission_info_resp_vo::AuthPermissionInfoRespVo;
+use crate::vo::auth::auth_refresh_token_req_vo::AuthRefreshTokenReqVo;
+use crate::vo::auth::auth_register_req_vo::AuthRegisterReqVo;
+use crate::vo::auth::auth_sms_send_req_vo::AuthSmsSendReqVo;
 use axum::extract::ConnectInfo;
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
