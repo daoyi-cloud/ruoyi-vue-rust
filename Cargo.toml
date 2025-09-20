@@ -20,17 +20,17 @@ daoyi-module-infra.workspace = true
 axum = { version = "0.8.4", features = ["macros"] }
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = { version = "0.1.41", features = ["async-await"] }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter", "chrono", "local-time"] }
-config = { version = "0.15.14", features = ["yaml"] }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.143"
-anyhow = { version = "1.0.99" }
-sea-orm = { version = "1.1.14", features = ["with-chrono", "debug-print", "sqlx-postgres", "with-rust_decimal", "runtime-tokio"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "chrono", "local-time"] }
+config = { version = "0.15.16", features = ["yaml"] }
+serde = { version = "1.0.225", features = ["derive"] }
+serde_json = "1.0.145"
+anyhow = { version = "1.0.100" }
+sea-orm = { version = "1.1.16", features = ["with-chrono", "debug-print", "sqlx-postgres", "with-rust_decimal", "runtime-tokio"] }
 num_cpus = "1.17.0"
 thiserror = { version = "2.0.16" }
 tower-http = { version = "0.6.6", features = ["trace", "timeout", "limit", "cors", "normalize-path", "auth"] }
 xid = "1.1.1"
-bytesize = "2.0.1"
+bytesize = "2.1.0"
 validator = { version = "0.20.0", features = ["derive"] }
 axum-valid = { version = "0.24.0", features = ["full_validator"] }
 regex = "1.11.2"
@@ -40,10 +40,10 @@ jsonwebtoken = "9.3.1"
 wax = "0.6.0"
 redis = { version = "0.32.5", features = ["tokio-comp"] }
 deadpool-redis = "0.22.0"
-chrono = { version = "0.4.41", features = ["serde"] }
+chrono = { version = "0.4.42", features = ["serde"] }
 indextree = "4.7.4"
 lazy_static = "1.5.0"
-humantime = "2.2.0"
+humantime = "2.3.0"
 rand = "0.9.2"
 strfmt = "0.2.5"
 daoyi-common = { version = "0.1.0", path = "crates/libs/common/daoyi-common" }
