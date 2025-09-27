@@ -21,8 +21,8 @@ axum = { version = "0.8.4", features = ["macros"] }
 tokio = { version = "1.47.1", features = ["full"] }
 tracing = { version = "0.1.41", features = ["async-await"] }
 tracing-subscriber = { version = "0.3.20", features = ["env-filter", "chrono", "local-time"] }
-config = { version = "0.15.16", features = ["yaml"] }
-serde = { version = "1.0.225", features = ["derive"] }
+config = { version = "0.15.17", features = ["yaml"] }
+serde = { version = "1.0.227", features = ["derive"] }
 serde_json = "1.0.145"
 anyhow = { version = "1.0.100" }
 sea-orm = { version = "1.1.16", features = ["with-chrono", "debug-print", "sqlx-postgres", "with-rust_decimal", "runtime-tokio"] }
@@ -33,12 +33,12 @@ xid = "1.1.1"
 bytesize = "2.1.0"
 validator = { version = "0.20.0", features = ["derive"] }
 axum-valid = { version = "0.24.0", features = ["full_validator"] }
-regex = "1.11.2"
+regex = "1.11.3"
 idgenerator = "2.0.0"
 bcrypt = "0.17.1"
 jsonwebtoken = "9.3.1"
 wax = "0.6.0"
-redis = { version = "0.32.5", features = ["tokio-comp"] }
+redis = { version = "0.32.6", features = ["tokio-comp"] }
 deadpool-redis = "0.22.0"
 chrono = { version = "0.4.42", features = ["serde"] }
 indextree = "4.7.4"
