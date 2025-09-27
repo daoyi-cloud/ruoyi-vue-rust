@@ -19,7 +19,6 @@ pub use tenant::TenantConfig;
 use tokio::sync::OnceCell;
 
 static CONFIG: OnceCell<AppConfig> = OnceCell::const_new();
-// LazyLock::new(|| AppConfig::load().expect("Failed to initialize config"));
 
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
