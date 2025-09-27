@@ -72,7 +72,7 @@ impl AdminAuthService {
     }
 
     async fn validate_captcha(&self, captcha_verification: Option<&str>) -> ApiResult<()> {
-        if config::get().auth().captcha() {
+        if config::get().await.auth().captcha() {
             if captcha_verification.is_none() {
                 return Err(ApiError::BizCodeWithArgs(
                     AUTH_REGISTER_CAPTCHA_CODE_ERROR,

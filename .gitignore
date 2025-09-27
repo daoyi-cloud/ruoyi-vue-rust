@@ -10,3 +10,4 @@
 .env
 *-demo.yaml
 .env.demo
+nacos.yaml

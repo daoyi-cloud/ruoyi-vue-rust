@@ -19,7 +19,7 @@ pub fn get() -> anyhow::Result<&'static DatabaseConnection> {
         .ok_or_else(|| anyhow::anyhow!("DatabaseConnection not initialized"))
 }
 async fn init() -> anyhow::Result<DatabaseConnection> {
-    let database_config = config::get().database();
+    let database_config = config::get().await.database();
     let mut options = ConnectOptions::new(format!(
         "postgres://{}:{}@{}:{}/{}",
         database_config.user(),

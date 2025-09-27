@@ -11,7 +11,7 @@ static REDIS: OnceCell<Pool> = OnceCell::const_new();
 const CONNECTION_TEST_KEY: &str = "connection_test_key";
 
 async fn init() -> anyhow::Result<Pool> {
-    let redis_config = config::get().redis();
+    let redis_config = config::get().await.redis();
     let host = redis_config.host();
     let port = redis_config.port();
     let db = redis_config.database();
@@ -55,15 +55,15 @@ pub async fn test_redis() -> anyhow::Result<String> {
     Ok(v)
 }
 
-fn key_generator(key: &str) -> String {
-    let cache_key_prefix = config::get().redis().cache_key_prefix();
+async fn key_generator(key: &str) -> String {
+    let cache_key_prefix = config::get().await.redis().cache_key_prefix();
     format!("{}:{}", cache_key_prefix, key)
 }
 pub async fn cache_get_json<V>(key: &str) -> anyhow::Result<Option<V>>
 where
     V: DeserializeOwned,
 {
-    let json_str = get::<Option<String>>(key_generator(key).as_ref()).await?;
+    let json_str = get::<Option<String>>(key_generator(key).await.as_ref()).await?;
     if json_str.is_none() {
         return Ok(None);
     }
@@ -76,28 +76,28 @@ where
     V: Serialize,
 {
     let json_str = serde_json::to_string(value)?;
-    cache_set(key_generator(key).as_ref(), json_str).await
+    cache_set(key_generator(key).await.as_ref(), json_str).await
 }
 pub async fn cache_set_json_ex<V>(key: &str, value: &V, expire_seconds: u64) -> anyhow::Result<()>
 where
     V: Serialize,
 {
     let json_str = serde_json::to_string(value)?;
-    cache_set_ex(key_generator(key).as_ref(), json_str, expire_seconds).await
+    cache_set_ex(key_generator(key).await.as_ref(), json_str, expire_seconds).await
 }
 
 pub async fn cache_get<V>(key: &str) -> anyhow::Result<Option<V>>
 where
     V: FromRedisValue + Send + Sync + 'static,
 {
-    let value = get(key_generator(key).as_ref()).await?;
+    let value = get(key_generator(key).await.as_ref()).await?;
     Ok(value)
 }
 pub async fn cache_set<V>(key: &str, value: V) -> anyhow::Result<()>
 where
     V: ToRedisArgs + Send + Sync + 'static,
 {
-    let expire_seconds = config::get().redis().expire_seconds();
+    let expire_seconds = config::get().await.redis().expire_seconds();
     cache_set_ex(key, value, expire_seconds).await
 }
 
@@ -105,7 +105,7 @@ pub async fn cache_set_ex<V>(key: &str, value: V, expire_seconds: u64) -> anyhow
 where
     V: ToRedisArgs + Send + Sync + 'static,
 {
-    set_ex(key_generator(key).as_ref(), value, expire_seconds).await?;
+    set_ex(key_generator(key).await.as_ref(), value, expire_seconds).await?;
     Ok(())
 }
 

@@ -34,7 +34,7 @@ impl AsyncAuthorizeRequest<Body> for TenantAuth {
 
     fn authorize(&mut self, mut request: Request<Body>) -> Self::Future {
         Box::pin(async {
-            let tenant = config::get().tenant();
+            let tenant = config::get().await.tenant();
             if !tenant.enabled() {
                 request
                     .extensions_mut()

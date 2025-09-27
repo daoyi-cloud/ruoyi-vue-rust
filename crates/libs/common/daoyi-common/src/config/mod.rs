@@ -1,10 +1,12 @@
 mod auth;
 mod database;
+mod nacos;
 mod redis;
 mod server;
 mod sms_code;
 mod tenant;
 
+use crate::config::nacos::load_nacos_config;
 use crate::config::sms_code::SmsCodeConfig;
 use anyhow::{Context, anyhow};
 pub use auth::AuthConfig;
@@ -13,37 +15,50 @@ pub use database::DatabaseConfig;
 pub use redis::RedisConfig;
 use serde::Deserialize;
 pub use server::ServerConfig;
-use std::sync::LazyLock;
 pub use tenant::TenantConfig;
+use tokio::sync::OnceCell;
 
-static CONFIG: LazyLock<AppConfig> =
-    LazyLock::new(|| AppConfig::load().expect("Failed to initialize config"));
+static CONFIG: OnceCell<AppConfig> = OnceCell::const_new();
+// LazyLock::new(|| AppConfig::load().expect("Failed to initialize config"));
 
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
+    #[serde(default = "ServerConfig::default")]
     server: ServerConfig,
+    #[serde(default = "DatabaseConfig::default")]
     database: DatabaseConfig,
     #[serde(default = "AuthConfig::default")]
     auth: AuthConfig,
     #[serde(default = "TenantConfig::default")]
     tenant: TenantConfig,
+    #[serde(default = "RedisConfig::default")]
     redis: RedisConfig,
+    #[serde(default = "SmsCodeConfig::default")]
     sms_code: SmsCodeConfig,
 }
 
 impl AppConfig {
-    pub fn load() -> anyhow::Result<Self> {
-        Config::builder()
+    pub async fn load() -> anyhow::Result<Self> {
+        let config_path = std::env::var("CONFIG_PATH").unwrap_or_else(|_| "resources".to_string());
+        let mut config_builder = Config::builder()
             .add_source(
-                config::File::with_name("application")
-                    .format(FileFormat::Yaml)
-                    .required(true),
-            )
-            .add_source(
-                config::File::with_name("application-local")
+                config::File::with_name(format!("{}/application", config_path).as_ref())
                     .format(FileFormat::Yaml)
                     .required(false),
             )
+            .add_source(
+                config::File::with_name(format!("{}/application-local", config_path).as_ref())
+                    .format(FileFormat::Yaml)
+                    .required(false),
+            );
+        let nacos_config = load_nacos_config().await?;
+        if nacos_config.is_some() {
+            let nacos_config = nacos_config.unwrap();
+            config_builder = config_builder.add_source(
+                config::File::from_str(nacos_config.content(), FileFormat::Yaml).required(false),
+            );
+        }
+        config_builder
             .add_source(
                 config::Environment::with_prefix("APP")
                     .try_parsing(true)
@@ -76,8 +91,14 @@ impl AppConfig {
     }
 }
 
-pub fn get() -> &'static AppConfig {
-    &CONFIG
+pub async fn get() -> &'static AppConfig {
+    CONFIG
+        .get_or_init(|| async {
+            AppConfig::load()
+                .await
+                .expect("Failed to initialize config")
+        })
+        .await
 }
 
 pub fn default_bool() -> bool {

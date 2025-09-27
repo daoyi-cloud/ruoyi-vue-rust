@@ -32,7 +32,7 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
 
     fn authorize(&mut self, mut request: Request<Body>) -> Self::Future {
         Box::pin(async {
-            let auth_config = config::get().auth();
+            let auth_config = config::get().await.auth();
             let ignore_urls = auth_config.ignore_urls();
             let token = request
                 .headers()

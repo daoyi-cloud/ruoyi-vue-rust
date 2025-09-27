@@ -1,0 +1,7 @@
+enable: true
+server_addr: 127.0.0.1:8848
+namespace: public
+app_name: daoyi-rs-system
+group: DEFAULT_GROUP
+auth_username: admin
+auth_password: admin

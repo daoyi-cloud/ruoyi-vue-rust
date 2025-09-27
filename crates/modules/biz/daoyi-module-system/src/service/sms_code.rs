@@ -58,7 +58,7 @@ impl SmsCodeService {
             .order_by_desc(system_sms_code::Column::Id)
             .one(database::get()?)
             .await?;
-        let sms_config = config::get().sms_code();
+        let sms_config = config::get().await.sms_code();
         let mut today_index = 1;
         if last_sms_code.is_some() {
             let last_sms_code = last_sms_code.unwrap();
