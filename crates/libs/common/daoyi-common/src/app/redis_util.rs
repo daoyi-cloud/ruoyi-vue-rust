@@ -11,7 +11,8 @@ static REDIS: OnceCell<Pool> = OnceCell::const_new();
 const CONNECTION_TEST_KEY: &str = "connection_test_key";
 
 async fn init() -> anyhow::Result<Pool> {
-    let redis_config = config::get().await.redis();
+    let c = config::get().await;
+    let redis_config = c.redis();
     let host = redis_config.host();
     let port = redis_config.port();
     let db = redis_config.database();
@@ -56,7 +57,8 @@ pub async fn test_redis() -> anyhow::Result<String> {
 }
 
 async fn key_generator(key: &str) -> String {
-    let cache_key_prefix = config::get().await.redis().cache_key_prefix();
+    let c = config::get().await;
+    let cache_key_prefix = c.redis().cache_key_prefix();
     format!("{}:{}", cache_key_prefix, key)
 }
 pub async fn cache_get_json<V>(key: &str) -> anyhow::Result<Option<V>>

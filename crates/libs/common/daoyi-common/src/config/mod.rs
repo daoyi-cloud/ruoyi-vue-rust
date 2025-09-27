@@ -15,12 +15,15 @@ pub use database::DatabaseConfig;
 pub use redis::RedisConfig;
 use serde::Deserialize;
 pub use server::ServerConfig;
+use std::sync::{Arc, LazyLock};
 pub use tenant::TenantConfig;
-use tokio::sync::OnceCell;
+use tokio::sync::RwLock;
 
-static CONFIG: OnceCell<AppConfig> = OnceCell::const_new();
+// static CONFIG: OnceCell<AppConfig> = OnceCell::const_new();
+static CONFIG: LazyLock<RwLock<Arc<AppConfig>>> =
+    LazyLock::new(|| RwLock::new(Arc::new(AppConfig::default())));
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub struct AppConfig {
     #[serde(default = "ServerConfig::default")]
     server: ServerConfig,
@@ -89,15 +92,14 @@ impl AppConfig {
         &self.sms_code
     }
 }
-
-pub async fn get() -> &'static AppConfig {
-    CONFIG
-        .get_or_init(|| async {
-            AppConfig::load()
-                .await
-                .expect("Failed to initialize config")
-        })
-        .await
+pub async fn refresh() -> anyhow::Result<()> {
+    let new_config = AppConfig::load().await?;
+    let mut write_guard = CONFIG.write().await;
+    *write_guard = Arc::new(new_config);
+    Ok(())
+}
+pub async fn get() -> Arc<AppConfig> {
+    CONFIG.read().await.clone()
 }
 
 pub fn default_bool() -> bool {

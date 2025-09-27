@@ -25,10 +25,10 @@ pub async fn run(router: Router<AppState>) -> anyhow::Result<()> {
     logger::init();
     tracing::info!("Starting app server...");
     utils::id::init()?;
+    config::refresh().await?;
     redis_util::init_redis().await?;
     database::init_db().await?;
     let state = AppState::new();
-    let server = server::Server::new(config::get().await.server());
 
-    server.start(state, router).await
+    server::Server.start(state, router).await
 }

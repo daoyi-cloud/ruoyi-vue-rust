@@ -7,7 +7,7 @@ use crate::app::{
         tenant_middleware::get_tenant_layer,
     },
 };
-use crate::config::ServerConfig;
+use crate::config;
 use axum::{
     Router,
     extract::Request,
@@ -24,19 +24,15 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-pub struct Server {
-    config: &'static ServerConfig,
-}
+pub struct Server;
 
 impl Server {
-    pub fn new(config: &'static ServerConfig) -> Self {
-        Self { config }
-    }
-
     pub async fn start(&self, state: AppState, router: Router<AppState>) -> anyhow::Result<()> {
         let router = self.build_router(state, router);
 
-        let listener = TcpListener::bind(format!("0.0.0.0:{}", self.config.port())).await?;
+        let c = config::get().await;
+
+        let listener = TcpListener::bind(format!("0.0.0.0:{}", c.server().port())).await?;
         tracing::info!("Listening on {}", listener.local_addr()?);
         tracing::info!("goto http://{}", listener.local_addr()?);
         axum::serve(

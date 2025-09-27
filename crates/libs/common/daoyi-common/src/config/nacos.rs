@@ -78,11 +78,11 @@ fn get_nacos_config() -> &'static NacosConfig {
 impl Into<ClientProps> for NacosConfig {
     fn into(self) -> ClientProps {
         ClientProps::new()
-            .server_addr(self.server_addr)
-            .namespace(self.namespace)
-            .app_name(self.app_name)
-            .auth_username(self.auth_username)
-            .auth_password(self.auth_password)
+            .server_addr(self.server_addr())
+            .namespace(self.namespace())
+            .app_name(self.app_name())
+            .auth_username(self.auth_username())
+            .auth_password(self.auth_password())
     }
 }
 
@@ -91,6 +91,11 @@ struct NacosConfigChangeListener;
 impl ConfigChangeListener for NacosConfigChangeListener {
     fn notify(&self, config_resp: ConfigResponse) {
         tracing::info!("listen the config={:#?}", config_resp);
+        tokio::spawn(async move {
+            if let Err(e) = super::refresh().await {
+                tracing::error!("Failed to update config: {:?}", e);
+            }
+        });
     }
 }
 static CONFIG_SERVICE: OnceCell<ConfigService> = OnceCell::const_new();
