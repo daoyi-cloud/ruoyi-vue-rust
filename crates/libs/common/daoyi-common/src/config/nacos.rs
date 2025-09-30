@@ -1,4 +1,5 @@
-use crate::config::{AppConfig, default_bool};
+use crate::app::logger;
+use crate::config::{AppConfig, default_bool, get};
 use anyhow::{Context, anyhow};
 use config::{Config, FileFormat};
 use nacos_sdk::api::config::{
@@ -95,6 +96,8 @@ impl ConfigChangeListener for NacosConfigChangeListener {
             if let Err(e) = super::refresh().await {
                 tracing::error!("Failed to update config: {:?}", e);
             }
+            // 更新日志级别
+            let _ = logger::update_log_level().await;
         });
     }
 }
