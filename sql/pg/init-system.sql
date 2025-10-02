@@ -1201,6 +1201,9 @@ CREATE TABLE system_menu
 
 ALTER TABLE system_menu
     ADD CONSTRAINT pk_system_menu PRIMARY KEY (id);
+alter table system_menu
+    add perm_apis text default '[]' not null;
+
 
 COMMENT ON COLUMN system_menu.id IS '菜单ID';
 COMMENT ON COLUMN system_menu.name IS '菜单名称';
@@ -1222,7 +1225,7 @@ COMMENT ON COLUMN system_menu.updater IS '更新者';
 COMMENT ON COLUMN system_menu.update_time IS '更新时间';
 COMMENT ON COLUMN system_menu.deleted IS '是否删除';
 COMMENT ON TABLE system_menu IS '菜单权限表';
-
+comment on column system_menu.perm_apis is '授权api';
 -- ----------------------------
 -- Records of system_menu
 -- ----------------------------
