@@ -9,7 +9,7 @@ use std::time::Duration;
 const DEFAULT_SECRET: &str = "se12345c@ret";
 static DEFAULT_JWT: LazyLock<JWT> = LazyLock::new(|| JWT::default());
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     jti: String,
     sub: String,
