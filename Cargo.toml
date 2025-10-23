@@ -36,7 +36,7 @@ axum-valid = { version = "0.24.0", features = ["full_validator"] }
 regex = "1.12.2"
 idgenerator = "2.0.0"
 bcrypt = "0.17.1"
-jsonwebtoken = { version = "10.0.0", features = ["rust_crypto"] }
+jsonwebtoken = { version = "10.1.0", features = ["rust_crypto"] }
 wax = "0.6.0"
 redis = { version = "0.32.7", features = ["tokio-comp"] }
 deadpool-redis = "0.22.0"
