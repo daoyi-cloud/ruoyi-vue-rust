@@ -19,6 +19,11 @@ tenant:
   ignore_urls:
     - /
     - /demo/api/redis/current-test-key
+    - /swagger-ui
+    - /swagger-ui/*
+    - /scalar
+    - /scalar/*
+    - /api-docs/*
 auth:
   method: db
   ignore_urls:
@@ -29,5 +34,10 @@ auth:
     - /system/admin-api/auth/refresh-token
     - /system/admin-api/auth/register
     - /system/admin-api/auth/send-sms-code
+    - /swagger-ui
+    - /swagger-ui/*
+    - /scalar
+    - /scalar/*
+    - /api-docs/*
 sms_code:
   expire_times: 5m

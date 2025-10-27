@@ -6,6 +6,7 @@ use crate::app::{
         auth_middleware::get_auth_layer, permission_middleware::get_permission_layer,
         tenant_middleware::get_tenant_layer,
     },
+    openapi,
 };
 use crate::config;
 use axum::{
@@ -85,6 +86,7 @@ impl Server {
             .on_response(LatencyOnResponse);
 
         Router::new()
+            .merge(openapi::create_openapi_router())
             .merge(router)
             .layer(timeout)
             .layer(body_limit)

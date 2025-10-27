@@ -22,3 +22,4 @@ serde_json.workspace = true
 humantime.workspace = true
 rand.workspace = true
 strfmt.workspace = true
+utoipa.workspace = true

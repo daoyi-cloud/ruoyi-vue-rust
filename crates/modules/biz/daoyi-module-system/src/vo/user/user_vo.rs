@@ -1,10 +1,11 @@
 use daoyi_entities_system::entity::system_users;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 /// 用户信息
 ///
 /// UserVO，用户信息 VO
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct UserVo {
     /// 用户头像

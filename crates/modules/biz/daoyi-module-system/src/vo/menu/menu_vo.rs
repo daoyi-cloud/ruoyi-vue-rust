@@ -1,8 +1,9 @@
 use daoyi_entities_system::entity::system_menu;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 /// MenuVO，管理后台 - 登录用户的菜单信息 Response VO
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MenuVo {
     /// 是否总是显示

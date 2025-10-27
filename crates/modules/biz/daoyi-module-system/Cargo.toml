@@ -16,3 +16,4 @@ indextree.workspace = true
 tracing.workspace = true
 tokio.workspace = true
 anyhow.workspace = true
+utoipa.workspace = true

@@ -5,11 +5,22 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
+use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[aliases(
+    ApiJsonResponse<T> = ApiResponse<T>,
+    ApiJsonResponseString = ApiResponse<String>,
+    ApiJsonResponseBool = ApiResponse<bool>,
+)]
 pub struct ApiResponse<T> {
+    /// 响应码，0 表示成功，非 0 表示失败
+    #[schema(example = 0)]
     pub code: i32,
+    /// 响应消息
+    #[schema(example = "ok")]
     pub message: String,
+    /// 响应数据
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
 }

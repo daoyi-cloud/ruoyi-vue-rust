@@ -4,6 +4,7 @@ pub mod database;
 pub mod latency;
 pub mod logger;
 mod middlewares;
+pub mod openapi;
 pub mod redis_util;
 pub mod server;
 
