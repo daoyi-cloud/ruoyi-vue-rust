@@ -27,6 +27,7 @@ pub struct MenuVo {
     /// 是否可见
     pub visible: bool,
     /// 子路由
+    #[schema(no_recursion)]
     pub children: Vec<MenuVo>,
 }
 
