@@ -8,11 +8,6 @@ use std::fmt::Display;
 use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-#[aliases(
-    ApiJsonResponse<T> = ApiResponse<T>,
-    ApiJsonResponseString = ApiResponse<String>,
-    ApiJsonResponseBool = ApiResponse<bool>,
-)]
 pub struct ApiResponse<T> {
     /// 响应码，0 表示成功，非 0 表示失败
     #[schema(example = 0)]
@@ -24,6 +19,10 @@ pub struct ApiResponse<T> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
 }
+
+pub type ApiJsonResponse<T> = ApiResponse<T>;
+pub type ApiJsonResponseString = ApiResponse<String>;
+pub type ApiJsonResponseBool = ApiResponse<bool>;
 
 impl<T> ApiResponse<T> {
     pub fn new(code: i32, message: String, data: Option<T>) -> Self {

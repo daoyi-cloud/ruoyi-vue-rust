@@ -1,7 +1,12 @@
 use axum::Router;
-use daoyi_common_support::utils::errors::error::ApiJsonResponse;
-use utoipa::OpenApi;
-use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
+use daoyi_common_support::utils::web::response::{ApiJsonResponseBool, ApiJsonResponseString};
+use utoipa::{
+    OpenApi,
+    openapi::{
+        Components,
+        security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
+    },
+};
 use utoipa_scalar::{Scalar, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -28,10 +33,7 @@ use super::AppState;
         (url = "https://api.example.com", description = "生产环境")
     ),
     components(
-        schemas(
-            ApiJsonResponse<String>,
-            ApiJsonResponse<bool>,
-        )
+        schemas(ApiJsonResponseString, ApiJsonResponseBool)
     ),
     modifiers(&SecurityAddon),
     tags(
@@ -59,7 +61,7 @@ impl utoipa::Modify for SecurityAddon {
                         .build(),
                 ),
             );
-            
+
             components.add_security_scheme(
                 "tenant_id",
                 SecurityScheme::Http(
@@ -84,32 +86,26 @@ pub fn create_openapi_router() -> Router<AppState> {
 
 /// 合并多个 OpenAPI 文档
 pub fn merge_openapi_docs() -> utoipa::openapi::OpenApi {
-    let mut main_doc = ApiDoc::openapi();
-    
+    let main_doc = ApiDoc::openapi();
+
     // 这里可以合并其他模块的 OpenAPI 文档
     // 例如: merge_paths(&mut main_doc, system_module::ApiDoc::openapi());
-    
+
     main_doc
 }
 
 /// 辅助函数：合并路径
 #[allow(dead_code)]
 fn merge_paths(base: &mut utoipa::openapi::OpenApi, other: utoipa::openapi::OpenApi) {
-    if let Some(paths) = other.paths {
-        if let Some(base_paths) = &mut base.paths {
-            for (path, item) in paths.paths {
-                base_paths.paths.insert(path, item);
-            }
-        }
+    for (path, item) in other.paths.paths {
+        base.paths.paths.insert(path, item);
     }
-    
+
     if let Some(components) = other.components {
-        if let Some(base_components) = &mut base.components {
-            if let Some(schemas) = components.schemas {
-                for (name, schema) in schemas {
-                    base_components.schemas.insert(name, schema);
-                }
-            }
+        let base_components = base.components.get_or_insert_with(Components::default);
+
+        for (name, schema) in components.schemas {
+            base_components.schemas.insert(name, schema);
         }
     }
 }

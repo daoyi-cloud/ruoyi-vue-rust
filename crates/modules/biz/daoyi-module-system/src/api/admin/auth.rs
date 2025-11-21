@@ -8,8 +8,11 @@ use crate::vo::auth::auth_sms_send_req_vo::AuthSmsSendReqVo;
 use axum::extract::ConnectInfo;
 use axum::{Extension, Router, debug_handler, routing};
 use daoyi_common::app::{AppState, TenantContextHolder, auth::Principal};
-use daoyi_common_support::utils::errors::error::{ApiJsonResult, api_json_ok};
 use daoyi_common_support::utils::web::valid::{ValidJson, ValidQuery};
+use daoyi_common_support::utils::{
+    errors::error::{ApiJsonResult, api_json_ok},
+    web::response::ApiJsonResponse,
+};
 use std::net::SocketAddr;
 use utoipa::OpenApi;
 

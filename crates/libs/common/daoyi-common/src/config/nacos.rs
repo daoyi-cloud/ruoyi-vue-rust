@@ -1,5 +1,5 @@
 use crate::app::logger;
-use crate::config::{default_bool, get};
+use crate::config::default_bool;
 use anyhow::{Context, anyhow};
 use config::{Config, FileFormat};
 use nacos_sdk::api::config::{
