@@ -55,15 +55,22 @@ pub fn create_router() -> Router<AppState> {
 
 #[utoipa::path(
     post,
-    path = "/system/admin-api/auth/send-sms-code",
+    path = "/admin-api/auth/send-sms-code",
     tag = "auth",
     summary = "发送短信验证码",
     description = "发送短信验证码用于注册或登录",
     request_body = AuthSmsSendReqVo,
+    params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx")
+    ),
     responses(
         (status = 200, description = "发送成功", body = ApiJsonResponse<bool>),
         (status = 400, description = "参数错误"),
         (status = 429, description = "发送过于频繁"),
+    ),
+    security(
+        ("tenant_id" = [])
     )
 )]
 #[debug_handler]
@@ -80,14 +87,21 @@ async fn send_sms_code(
 
 #[utoipa::path(
     post,
-    path = "/system/admin-api/auth/register",
+    path = "/admin-api/auth/register",
     tag = "auth",
     summary = "用户注册",
     description = "注册新用户账号",
     request_body = AuthRegisterReqVo,
+    params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx")
+    ),
     responses(
         (status = 200, description = "注册成功", body = ApiJsonResponse<AuthLoginRespVo>),
         (status = 400, description = "注册参数错误"),
+    ),
+    security(
+        ("tenant_id" = [])
     )
 )]
 #[debug_handler]
@@ -100,12 +114,17 @@ async fn register(
 
 #[utoipa::path(
     get,
-    path = "/system/admin-api/auth/get-permission-info",
+    path = "/admin-api/auth/get-permission-info",
     tag = "auth",
     summary = "获取权限信息",
     description = "获取当前用户的权限信息",
     security(
+        ("tenant_id" = []),
         ("bearer_auth" = [])
+    ),
+    params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx")
     ),
     responses(
         (status = 200, description = "获取成功", body = ApiJsonResponse<AuthPermissionInfoRespVo>),
@@ -126,16 +145,21 @@ async fn get_permission_info(
 
 #[utoipa::path(
     post,
-    path = "/system/admin-api/auth/refresh-token",
+    path = "/admin-api/auth/refresh-token",
     tag = "auth",
     summary = "刷新访问令牌",
     description = "使用刷新令牌获取新的访问令牌",
     params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx"),
         ("refreshToken" = String, Query, description = "刷新令牌")
     ),
     responses(
         (status = 200, description = "刷新成功", body = ApiJsonResponse<AuthLoginRespVo>),
         (status = 400, description = "刷新令牌无效"),
+    ),
+    security(
+        ("tenant_id" = [])
     )
 )]
 #[debug_handler]
@@ -152,12 +176,17 @@ async fn refresh_token(
 
 #[utoipa::path(
     post,
-    path = "/system/admin-api/auth/logout",
+    path = "/admin-api/auth/logout",
     tag = "auth",
     summary = "登出系统",
     description = "退出当前登录会话",
     security(
+        ("tenant_id" = []),
         ("bearer_auth" = [])
+    ),
+    params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx")
     ),
     responses(
         (status = 200, description = "登出成功"),
@@ -174,15 +203,22 @@ async fn logout(
 
 #[utoipa::path(
     post,
-    path = "/system/admin-api/auth/login",
+    path = "/admin-api/auth/login",
     tag = "auth",
     summary = "管理员登录",
     description = "使用账号密码登录管理后台",
     request_body = AuthLoginReqVo,
+    params(
+        ("tenant-id" = String, Header, description = "租户ID，例如 1", example = "1"),
+        ("Authorization" = Option<String>, Header, description = "Bearer Token，格式如 `Bearer <token>`，可选", example = "Bearer xxx")
+    ),
     responses(
         (status = 200, description = "登录成功", body = ApiJsonResponse<AuthLoginRespVo>),
         (status = 400, description = "请求参数错误"),
         (status = 401, description = "账号或密码错误"),
+    ),
+    security(
+        ("tenant_id" = [])
     )
 )]
 #[debug_handler]
