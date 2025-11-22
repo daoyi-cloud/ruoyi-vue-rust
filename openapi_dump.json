@@ -1,0 +1,758 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "若依 Rust 管理系统 API",
+    "description": "基于 Axum + SeaORM + PostgreSQL 的企业级管理系统",
+    "contact": {
+      "name": "Daoyi Cloud",
+      "email": "913573586@qq.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "开发环境"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "生产环境"
+    }
+  ],
+  "paths": {
+    "/system/admin-api/auth/get-permission-info": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "获取权限信息",
+        "description": "获取当前用户的权限信息",
+        "operationId": "get_permission_info",
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AuthPermissionInfoRespVo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权"
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/system/admin-api/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "管理员登录",
+        "description": "使用账号密码登录管理后台",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthLoginReqVo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AuthLoginRespVo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误"
+          },
+          "401": {
+            "description": "账号或密码错误"
+          }
+        }
+      }
+    },
+    "/system/admin-api/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "登出系统",
+        "description": "退出当前登录会话",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "登出成功"
+          },
+          "401": {
+            "description": "未授权"
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/system/admin-api/auth/refresh-token": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "刷新访问令牌",
+        "description": "使用刷新令牌获取新的访问令牌",
+        "operationId": "refresh_token",
+        "parameters": [
+          {
+            "name": "refreshToken",
+            "in": "query",
+            "description": "刷新令牌",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "刷新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AuthLoginRespVo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "刷新令牌无效"
+          }
+        }
+      }
+    },
+    "/system/admin-api/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "用户注册",
+        "description": "注册新用户账号",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegisterReqVo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "注册成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AuthLoginRespVo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "注册参数错误"
+          }
+        }
+      }
+    },
+    "/system/admin-api/auth/send-sms-code": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "发送短信验证码",
+        "description": "发送短信验证码用于注册或登录",
+        "operationId": "send_sms_code",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthSmsSendReqVo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "发送成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_bool"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误"
+          },
+          "429": {
+            "description": "发送过于频繁"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "响应码，0 表示成功，非 0 表示失败",
+            "example": 0
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/bool",
+                "description": "响应数据"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "ok"
+          }
+        }
+      },
+      "ApiResponse_AuthLoginRespVo": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "响应码，0 表示成功，非 0 表示失败",
+            "example": 0
+          },
+          "data": {
+            "type": "object",
+            "description": "AuthLoginRespVO，管理后台 - 登录 Response VO",
+            "required": [
+              "accessToken",
+              "expiresTime",
+              "refreshToken",
+              "userId"
+            ],
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "description": "访问令牌",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              },
+              "expiresTime": {
+                "type": "string",
+                "description": "过期时间",
+                "example": "2024-12-31 23:59:59"
+              },
+              "refreshToken": {
+                "type": "string",
+                "description": "刷新令牌",
+                "example": "refresh_token_xxx"
+              },
+              "userId": {
+                "type": "integer",
+                "format": "int64",
+                "description": "用户编号",
+                "example": 1
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "ok"
+          }
+        }
+      },
+      "ApiResponse_AuthPermissionInfoRespVo": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "响应码，0 表示成功，非 0 表示失败",
+            "example": 0
+          },
+          "data": {
+            "type": "object",
+            "description": "AuthPermissionInfoRespVO，管理后台 - 登录用户的权限信息 Response VO，额外包括用户信息和角色列表",
+            "required": [
+              "menus",
+              "permissions",
+              "roles",
+              "user"
+            ],
+            "properties": {
+              "menus": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MenuVo"
+                },
+                "description": "菜单树"
+              },
+              "permissions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "操作权限数组",
+                "uniqueItems": true
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "角色标识数组",
+                "uniqueItems": true
+              },
+              "user": {
+                "$ref": "#/components/schemas/UserVo",
+                "description": "用户信息"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "ok"
+          }
+        }
+      },
+      "ApiResponse_bool": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "响应码，0 表示成功，非 0 表示失败",
+            "example": 0
+          },
+          "data": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "description": "响应消息",
+            "example": "ok"
+          }
+        }
+      },
+      "AuthLoginReqVo": {
+        "type": "object",
+        "description": "AuthLoginReqVO，管理后台 - 账号密码登录 Request VO，如果登录并绑定社交用户，需要传递 social 开头的参数",
+        "required": [
+          "password",
+          "username"
+        ],
+        "properties": {
+          "captchaVerification": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "验证码，验证码开启时，需要传递",
+            "example": "1234"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "admin123"
+          },
+          "socialCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "授权码"
+          },
+          "socialCodeValid": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "socialState": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "state"
+          },
+          "socialType": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "社交平台的类型，参见 SocialTypeEnum 枚举值"
+          },
+          "username": {
+            "type": "string",
+            "description": "账号",
+            "example": "admin"
+          }
+        }
+      },
+      "AuthLoginRespVo": {
+        "type": "object",
+        "description": "AuthLoginRespVO，管理后台 - 登录 Response VO",
+        "required": [
+          "accessToken",
+          "expiresTime",
+          "refreshToken",
+          "userId"
+        ],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "访问令牌",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expiresTime": {
+            "type": "string",
+            "description": "过期时间",
+            "example": "2024-12-31 23:59:59"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌",
+            "example": "refresh_token_xxx"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户编号",
+            "example": 1
+          }
+        }
+      },
+      "AuthPermissionInfoRespVo": {
+        "type": "object",
+        "description": "AuthPermissionInfoRespVO，管理后台 - 登录用户的权限信息 Response VO，额外包括用户信息和角色列表",
+        "required": [
+          "menus",
+          "permissions",
+          "roles",
+          "user"
+        ],
+        "properties": {
+          "menus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuVo"
+            },
+            "description": "菜单树"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "操作权限数组",
+            "uniqueItems": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "角色标识数组",
+            "uniqueItems": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserVo",
+            "description": "用户信息"
+          }
+        }
+      },
+      "AuthRefreshTokenReqVo": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌",
+            "example": "refresh_token_xxx"
+          }
+        }
+      },
+      "AuthRegisterReqVo": {
+        "type": "object",
+        "description": "AuthRegisterReqVO，管理后台 - Register Request VO",
+        "required": [
+          "nickname",
+          "password",
+          "username"
+        ],
+        "properties": {
+          "captchaVerification": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "验证码，验证码开启时，需要传递"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "用户昵称",
+            "example": "张三"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户账号",
+            "example": "zhangsan"
+          }
+        }
+      },
+      "AuthSmsSendReqVo": {
+        "type": "object",
+        "description": "AuthSmsSendReqVO，管理后台 - 发送手机验证码 Request VO",
+        "required": [
+          "mobile",
+          "scene"
+        ],
+        "properties": {
+          "captchaVerification": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "验证码，验证码开启时，需要传递"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138000"
+          },
+          "scene": {
+            "type": "integer",
+            "format": "int32",
+            "description": "短信场景",
+            "example": 1
+          }
+        }
+      },
+      "MenuVo": {
+        "type": "object",
+        "description": "MenuVO，管理后台 - 登录用户的菜单信息 Response VO",
+        "required": [
+          "alwaysShow",
+          "id",
+          "keepAlive",
+          "name",
+          "parentId",
+          "visible",
+          "children"
+        ],
+        "properties": {
+          "alwaysShow": {
+            "type": "boolean",
+            "description": "是否总是显示"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuVo"
+            },
+            "description": "子路由"
+          },
+          "component": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "组件路径,仅菜单类型为菜单时，才需要传"
+          },
+          "componentName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "组件名"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "菜单图标,仅菜单类型为菜单或者目录时，才需要传"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "菜单名称"
+          },
+          "keepAlive": {
+            "type": "boolean",
+            "description": "是否缓存"
+          },
+          "name": {
+            "type": "string",
+            "description": "菜单名称"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "父菜单 ID"
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "路由地址,仅菜单类型为菜单或者目录时，才需要传"
+          },
+          "visible": {
+            "type": "boolean",
+            "description": "是否可见"
+          }
+        }
+      },
+      "UserVo": {
+        "type": "object",
+        "description": "用户信息\n\nUserVO，用户信息 VO",
+        "required": [
+          "id",
+          "nickname",
+          "username"
+        ],
+        "properties": {
+          "avatar": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "用户头像"
+          },
+          "deptId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "部门编号"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "用户邮箱"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户编号"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "用户昵称"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户账号"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "请输入 JWT Token"
+      },
+      "tenant_id": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "租户 ID，在请求头 tenant-id 中传递"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer_auth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "认证管理"
+    },
+    {
+      "name": "system",
+      "description": "系统管理"
+    },
+    {
+      "name": "demo",
+      "description": "演示模块"
+    },
+    {
+      "name": "infra",
+      "description": "基础设施管理"
+    }
+  ]
+}

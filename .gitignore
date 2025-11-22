@@ -11,3 +11,4 @@
 *-demo.yaml
 .env.demo
 nacos.yaml
+.DS_Store
