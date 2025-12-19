@@ -1,7 +1,7 @@
 use crate::config;
 use daoyi_common_support::utils::id;
+use deadpool_redis::redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
 use deadpool_redis::{Config, Connection, Pool, Runtime};
-use redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use tokio::sync::OnceCell;
